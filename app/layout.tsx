@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-  import "./globals.css";
+import AuthInitializer from '@/components/shared/AuthInitializer'
+import "./globals.css";
+
 
   export const metadata: Metadata = {
     title: "Got You 咖揪",
@@ -14,6 +16,7 @@ import type { Metadata } from "next";
     return (
       <html lang="zh-TW">
         <body className="antialiased">
+          <AuthInitializer /> {/* 掛載全域使用者狀態的組件 */}
           {children}
         </body>
       </html>
