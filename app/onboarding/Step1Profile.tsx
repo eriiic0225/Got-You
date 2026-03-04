@@ -78,7 +78,7 @@ function Step1Profile({ toNextStep, setFormData }:Step1ProfileProps){
             <button type="button" onClick={()=>(setGender("male"))}
               className={`grow rounded-md px-3 py-1.5 border cursor-pointer transition bg-bg-tertiary
                 ${gender === 'male'
-                  ? 'border-primary'
+                  ? 'border-primary text-primary'
                   : 'bg-bg-tertiary border-border text-text-primary hover:bg-text-tertiary hover:border-primary'
                 }`}
               >男性 ♂
@@ -86,7 +86,7 @@ function Step1Profile({ toNextStep, setFormData }:Step1ProfileProps){
             <button type="button" onClick={()=>(setGender("female"))}
               className={`grow rounded-md px-3 py-1.5 border cursor-pointer transition bg-bg-tertiary
                 ${gender === 'female'
-                  ? 'border-primary'
+                  ? 'border-primary text-primary'
                   : 'bg-bg-tertiary border-border text-text-primary hover:bg-text-tertiary hover:border-primary'
                 }`}
               >女性 ♀ 
@@ -94,7 +94,7 @@ function Step1Profile({ toNextStep, setFormData }:Step1ProfileProps){
             <button type="button" onClick={()=>(setGender("nonBinary"))}
               className={`grow rounded-md px-3 py-1.5 border cursor-pointer transition bg-bg-tertiary
                 ${gender === 'nonBinary'
-                  ? 'border-primary'
+                  ? 'border-primary text-primary'
                   : 'bg-bg-tertiary border-border text-text-primary hover:bg-text-tertiary hover:border-primary'
                 }`}
               >非二元 ⚲
