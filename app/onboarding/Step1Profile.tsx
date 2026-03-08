@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form"
 import { calculateAge } from "@/lib/utils";
 import useImage from "@/hooks/useImage";
@@ -81,7 +81,7 @@ function Step1Profile({ toNextStep, setFormData, formData, onAvatarSelect, avata
           >
             { avatarPreviewUrl ? ( // 如果有上傳的圖片就顯示預覽
               <>
-                <img src={avatarPreviewUrl!} alt="頭貼預覽" className="w-full h-full object-cover" />
+                <img src={avatarPreviewUrl} alt="頭貼預覽" className="w-full h-full object-cover" />
                 {/* 甜甜圈遮罩：圓形內透明（圓形預覽）、圓形外暗（方形全貌） */}
                 <div
                   className="absolute inset-0"
