@@ -38,17 +38,17 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code)
 
     // 取得剛登入的用戶資料
-    // 判斷新/老用戶的邏輯：nickname 有值 = 已完成 onboarding = 老用戶
+    // 判斷新/老用戶的邏輯：gender 有值 = 已完成 onboarding = 老用戶
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const { data: profile } = await supabase
         .from('users')
-        .select('nickname')
+        .select('onboarding_completed')
         .eq('id', user.id)
         .single()
 
-      // nickname 有值代表已完成 onboarding，直接進 explore
-      if (profile?.nickname) redirectPath = '/explore'
+      // gender 有值代表已完成 onboarding，直接進 explore
+      if (profile?.onboarding_completed) redirectPath = '/explore'
     }
   }
 

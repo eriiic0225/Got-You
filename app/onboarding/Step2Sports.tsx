@@ -132,8 +132,14 @@ function Step2Sports({ toNextStep, onComplete, initialSelectedSports }:Step2Spor
           </>
         }
 
-        {error && <p className="text-center text-red-400 text-xs mt-1">{error}</p>}
       </div>
+      {error && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+          <div className="bg-black/70 text-white text-sm px-4 py-2.5 rounded-lg">
+            {error}
+          </div>
+        </div>
+      )}
       {/* 下一步 */}
       <button
         onClick={handleClick}

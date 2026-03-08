@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Step1Profile from "./Step1Profile";
 import Step2Sports from "./Step2Sports";
 import Step3Locations from "./Step3Locations";
@@ -9,9 +9,20 @@ import { APIProvider } from '@vis.gl/react-google-maps'
 import { supabase } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from 'next/navigation'
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 // const fieldTitleClassese = ""
 // const inputClassese = ""
+
+async function checkOnboardingSatus(id:string):Promise<boolean> {
+  const { data: profile } = await supabase
+    .from("users")
+    .select("onboarding_completed")
+    .eq("id", id)
+    .single()
+
+  return profile?.onboarding_completed
+}
 
 
 function OnBoarding(){
@@ -33,6 +44,18 @@ function OnBoarding(){
   const [selectedPlaces, setSelectedPlaces] = useState<google.maps.places.Place[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
+
+  useEffect(()=>{
+    if (!user) return
+
+    async function check() {
+      const hasOnboard = await checkOnboardingSatus(user!.id)
+      if (hasOnboard) {
+        router.push('/explore')
+      }
+    }
+    check()
+  },[user, router])
 
   const toNextStep = ()=>{
     setStepCount(stepCount+1)
@@ -121,7 +144,13 @@ function OnBoarding(){
 
 
   // auth 尚未初始化完成，先不 render（避免 user 是 null 的瞬間）
-  if (isAuthLoading) return null
+  if (isAuthLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <LoadingSpinner/>
+      </div>
+    )
+  }
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!} libraries={['places']}>
