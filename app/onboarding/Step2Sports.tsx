@@ -10,6 +10,7 @@ import { PiPersonSimpleHikeFill } from "react-icons/pi";
 interface Step2SportsProps {
   toNextStep: () => void
   onComplete: (sports: string[]) => void
+  initialSelectedSports: string[]  // 從父層傳入，用來在回上一步時恢復已選的運動
 }
 
 export interface SportType {
@@ -21,11 +22,13 @@ export interface SportType {
 }
 
 
-function Step2Sports({ toNextStep, onComplete }:Step2SportsProps){
+
+function Step2Sports({ toNextStep, onComplete, initialSelectedSports }:Step2SportsProps){
 
   const [isLoading, setIsLoading] = useState(true)
   const [sports, setSports] = useState<SportType[]>([])
-  const [selectedSports, setSelectedSports] = useState<string[]>([])  // 存選中的 id
+  // 用父層傳來的 initialSelectedSports 當初始值，回上一步時恢復已選項目
+  const [selectedSports, setSelectedSports] = useState<string[]>(initialSelectedSports)
   const [error, setError] = useState("")
 
   useEffect(()=>{

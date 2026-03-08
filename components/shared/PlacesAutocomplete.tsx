@@ -58,16 +58,17 @@ function PlacesAutocomplete({onPlaceSelect}: Props){
       {suggestions.length > 0 && (
         // absolute 讓 dropdown 浮在內容上方，不影響頁面排版
         // max-h + overflow-y-auto 限制最多顯示約 4 筆，超過可捲動
-        <ul className="absolute z-10 top-full mt-1 w-full bg-bg-secondary drop-shadow-xl rounded-md overflow-y-auto max-h-75">
+        <ul className="absolute z-10 top-full mt-1 px-1 w-full bg-bg-secondary drop-shadow-xl rounded-md overflow-y-auto max-h-75">
           {suggestions.map((suggestion, index) => {
             const prediction = suggestion.placePrediction
             return (
-              <li
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-bg-tertiary transition border-b border-border last:border-b-0">
-                  <IoLocationSharp size={30} className="rounded-full p-1.5 bg-border"/>
-                  <div className="flex flex-col gap-0.5">
+              <li key={index} className="border-b border-border last:border-b-0">
+                <button
+                  type="button"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="flex items-center gap-2 w-full text-left px-3 py-2.5 my-1 hover:bg-bg-tertiary hover:rounded-md focus:rounded-md transition cursor-pointer">
+                  <IoLocationSharp size={30} className="rounded-full p-1.5 bg-border shrink-0"/>
+                  <div className="flex flex-col gap-0.5 min-w-0">
                     {/* 主要文字：地點名稱 */}
                     <span className="text-sm text-text-primary truncate">
                       {prediction?.mainText?.text}
@@ -77,6 +78,7 @@ function PlacesAutocomplete({onPlaceSelect}: Props){
                       {prediction?.secondaryText?.text}
                     </span>
                   </div>
+                </button>
               </li>
             );
           })}

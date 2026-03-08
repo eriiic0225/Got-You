@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js'
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useRouter } from 'next/navigation';
 
 export default function ExplorePage() {
   const [user, setUser] = useState<User|null>(null);
   const logout = useAuthStore((state)=>state.logout)
+  const router = useRouter()
 
   useEffect(() => {
     async function getUser() {
@@ -16,6 +18,11 @@ export default function ExplorePage() {
     }
     getUser();
   }, []);
+
+  const handleClick = ()=>{
+    logout()
+    router.push("/")
+  }
 
   return (
     <div className="min-h-screen grid place-items-center bg-bg-primary px-4">
@@ -29,7 +36,7 @@ export default function ExplorePage() {
             <p className="text-text-primary">歡迎，{user.email}</p>
             <p className="text-text-secondary text-sm">User ID: {user.id}</p>
           </div>
-          <button onClick={logout} className='bg-primary px-3 py-2 rounded-lg text-text-primary cursor-pointer'>登出</button>
+          <button onClick={handleClick} className='bg-primary px-3 py-2 rounded-lg text-text-primary cursor-pointer'>登出</button>
         </>
         )}
 

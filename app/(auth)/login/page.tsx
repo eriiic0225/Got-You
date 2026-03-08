@@ -45,8 +45,22 @@ function LoginPage(){
       setError("root", { message: "登入狀態異常，請重試" })
       return
     }
+
     setUser(data.user)
-    router.push("/explore")
+
+    // 登入後到supabase檢查Onboarding是否已填完
+    const { data: profile } = await supabase
+      .from("users")
+      .select("nickname")
+      .eq('id', data.user.id)
+      .single()
+
+    // 有找到資料 = 已完成
+    if (profile?.nickname){
+      router.push("/explore")
+    }else{
+      router.push("/onboarding")
+    }
   }
 
   async function handleGoogleLogin(){
