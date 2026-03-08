@@ -16,7 +16,7 @@ function AuthInitializer(){
     // OAuth 登入後 session 建立好時，會觸發 SIGNED_IN 事件，確保 user 被正確寫入 store
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user ?? null)
+        setUser(session?.user ?? null) // 所有類型的 event 都會觸發並更新全域 User state
       }
     )
 

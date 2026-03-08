@@ -101,7 +101,7 @@ function OnBoarding(){
 
     const {error:userError} = await supabase
       .from("users")
-      .update({...formData, avatar_url: avatarUrl})
+      .update({...formData, avatar_url: avatarUrl, onboarding_completed: true})
       .eq("id", user.id)
     if (userError) {
       console.log('userError:', userError)

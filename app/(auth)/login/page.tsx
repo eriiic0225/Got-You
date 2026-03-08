@@ -51,12 +51,12 @@ function LoginPage(){
     // 登入後到supabase檢查Onboarding是否已填完
     const { data: profile } = await supabase
       .from("users")
-      .select("nickname")
+      .select("onboarding_completed")
       .eq('id', data.user.id)
       .single()
 
     // 有找到資料 = 已完成
-    if (profile?.nickname){
+    if (profile?.onboarding_completed){
       router.push("/explore")
     }else{
       router.push("/onboarding")

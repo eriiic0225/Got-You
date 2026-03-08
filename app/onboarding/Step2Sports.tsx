@@ -44,15 +44,6 @@ function Step2Sports({ toNextStep, onComplete, initialSelectedSports }:Step2Spor
     fetchSports()
   },[])
 
-  //這邊用來確認資料型態
-  useEffect(() => {
-    console.log(sports)
-  }, [sports])  // sports 變動時才印
-
-  useEffect(() => {
-    console.log(selectedSports)
-  }, [selectedSports]) 
-
   const toggleSport = (id:string)=>{
     if (selectedSports.includes(id)){
       setSelectedSports(selectedSports.filter(sportId => sportId !== id))
