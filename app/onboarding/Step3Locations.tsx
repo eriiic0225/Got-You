@@ -15,10 +15,11 @@ interface Step3LocationsProps {
   completeOnboarding: () => Promise<void>
   isSubmitting: boolean
   submitError: string
+  setCoords: (coords: { latitude: number | null; longitude: number | null }) => void
 }
 
 
-function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, isSubmitting, submitError}:Step3LocationsProps) {
+function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, isSubmitting, submitError, setCoords}:Step3LocationsProps) {
 
   const [ placeError, setPlaceError ] = useState<string>("")
 
@@ -82,6 +83,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
 
         if (data.latitude && data.longitude) {
           setCoordSource('ip')
+          setCoords({latitude: data.latitude, longitude: data.longitude})
           await searchNearbyPlaces(data.latitude, data.longitude, 5000)
         }
       } catch (err) {
@@ -106,6 +108,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
       async (position) => {
         const { latitude, longitude } = position.coords
         setCoordSource('gps')
+        setCoords({latitude, longitude})
         await searchNearbyPlaces(latitude, longitude, 2000)
         setIsLocating(false)
       },

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* 明確指定 Tailwind v4 要掃描的來源目錄
+   原因：Next.js 16 Turbopack 模式下，新增的子目錄（如 components/explore、app/(main)/explore）
+   有時不會被自動偵測，導致這些檔案裡的 class 無法出現在產生的 CSS 中。
+   @source 強制 Tailwind 掃描指定路徑，確保所有 utility class 都被包含。 */
+@source "../app/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+
 :root {
   --color-primary: #C4DC4A;
   --color-primary-hover: #B0C53E;

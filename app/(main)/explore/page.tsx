@@ -1,178 +1,143 @@
-'use client';
+'use client'
+// app/(main)/explore/page.tsx
+// 探索頁：顯示推薦使用者卡片
+// 左側（桌機）或頂部按鈕（手機）有篩選器，Tab 切換「共同地點」和「附近的人」
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useRouter } from 'next/navigation';
-import { RxAvatar } from 'react-icons/rx';
-import { calculateAge } from '@/lib/utils';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { FiSearch, FiSliders } from 'react-icons/fi'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useExploreStore } from '@/stores/useExploreStore'
+import UserCard from '@/components/explore/UserCard'
+import DesktopFilterSidebar from '@/components/explore/DesktopFilterSidebar'
+import MobileFilterModal from '@/components/explore/MobileFilterModal'
+import type { UserProfile } from '@/components/explore/UserCard'
+import { cn } from '@/lib/utils'
 
-// 從 public.users 取出的個人資料型別
-type Profile = {
-  nickname: string
-  gender: 'male' | 'female' | 'nonBinary' | null
-  birthday: string
-  bio: string
-  avatar_url: string | null
-}
-
-// 運動偏好（join sport_types 取得名稱）
-// many-to-one 關聯（多筆偏好 → 一個運動類型），Supabase 回傳單一物件而非陣列
-type SportPreference = {
-  sport_types: { name: string }
-}
-
-// 常去地點（join gym_locations 取得名稱）
-type UserLocation = {
-  gym_locations: { name: string }
-}
-
-// 用來把對應的gender轉換為文字
-const genderLabel = { male: '男性', female: '女性', nonBinary: '非二元' }
+// 測試用假資料，串接 RPC 後刪除
+const MOCK_USERS: UserProfile[] = [
+  { id: '1', nickname: 'Jack',    birthday: '1998-05-10', gender: 'male',   bio: '喜歡重訓和籃球',   avatar_url: null, latitude: null, longitude: null, sport_types: ['重量訓練', '籃球'], locations: ['World Gym 南京'] },
+  { id: '2', nickname: 'William', birthday: '1996-03-22', gender: 'male',   bio: '目標增肌減脂',     avatar_url: null, latitude: null, longitude: null, sport_types: ['重量訓練'], locations: ['健身工廠 中山'] },
+  { id: '3', nickname: 'Lisa',    birthday: '2000-11-01', gender: 'female', bio: '瑜珈＋慢跑愛好者', avatar_url: null, latitude: null, longitude: null, sport_types: ['瑜珈', '慢跑'], locations: ['World Gym 南京', '大安森林公園'] },
+  { id: '4', nickname: 'Tony',    birthday: '1995-08-15', gender: 'male',   bio: '',                avatar_url: null, latitude: null, longitude: null, sport_types: ['籃球', '游泳'], locations: ['信義運動中心'] },
+]
 
 export default function ExplorePage() {
-  const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
   const router = useRouter()
 
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [sports, setSports] = useState<string[]>([])
-  const [locations, setLocations] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // 從 Zustand 取得目前的 Tab、切換函式、篩選條件
+  const { activeTab, setActiveTab, filters } = useExploreStore()
 
-  useEffect(() => {
-    if (!user) return
-
-    async function fetchProfile() {
-      // 同時發出三個請求，節省時間
-      const [profileRes, sportsRes, locationsRes] = await Promise.all([
-        supabase
-          .from('users')
-          .select('nickname, gender, birthday, bio, avatar_url')
-          .eq('id', user!.id)
-          .single(),
-        supabase
-          .from('user_sport_preferences')
-          .select('sport_types(name)')
-          .eq('user_id', user!.id),
-        supabase
-          .from('user_gym_locations')
-          .select('gym_locations(name)')
-          .eq('user_id', user!.id)
-      ])
-
-      if (profileRes.data) setProfile(profileRes.data)
-      // 把 join 的巢狀結構攤平成純字串陣列
-      // sport_types & locations 是陣列，取 [0] 拿到該筆的名稱，filter 過濾掉萬一是 undefined 的情況
-      if (sportsRes.data) {
-        // as unknown as 是 TS 強制轉型的慣用寫法：先轉成 unknown 再轉成目標型別
-        // 因為 Supabase 推斷型別和我們手寫的型別有落差，但我們確定資料結構是對的
-        setSports((sportsRes.data as unknown as SportPreference[]).map(s => s.sport_types.name))
-      }
-      if (locationsRes.data) {
-        setLocations((locationsRes.data as unknown as UserLocation[]).map(l => l.gym_locations.name))
-      }
-      setIsLoading(false)
-    }
-
-    fetchProfile()
-  }, [user])
+  // 手機篩選器 Modal 的開關狀態
+  const [showMobileFilter, setShowMobileFilter] = useState(false)
 
   const handleLogout = async () => {
     await logout()
     router.push('/')
   }
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    )
-  }
+  // 計算有幾個篩選條件已啟用（用來在篩選按鈕上顯示數量 badge）
+  const activeFilterCount =
+    filters.sportTypeIds.length +
+    filters.genders.length +
+    (filters.ageRange[0] !== 18 || filters.ageRange[1] !== 60 ? 1 : 0) +
+    (activeTab === 'nearby' && filters.maxDistance !== 10 ? 1 : 0)
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-8 bg-bg-primary text-center">
-      <div className="w-full max-w-sm space-y-4">
+    <div className="min-h-screen bg-bg-primary">
+      <div className="max-w-[1200px] mx-auto md:grid md:grid-cols-[200px_1fr] md:gap-6 px-4 py-4">
 
-        <h1 className="text-text-primary font-semibold text-lg">探索</h1>
+        {/* 桌機版左欄 - 篩選器 */}
+        <DesktopFilterSidebar activeTab={activeTab}/>
 
-        {/* 個人資料卡片 */}
-        {profile && (
-          <div className="bg-bg-secondary rounded-2xl overflow-hidden">
-            {/* 頭貼 */}
-            <div className="relative h-64 w-full bg-bg-tertiary">
-              {profile.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt="頭貼"
-                  className="w-full h-full object-cover"
+        {/* 桌機版板右欄(手機版全屏) : 搜尋框 + Tab + 卡片*/}
+        <div>
+
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
+
+            <div className='flex gap-2 justify-end order-1 md:order-2'>
+              {/* 搜尋匡 */}
+              <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary'>
+                <input type="text" disabled
+                  className='bg-bg-secondary px-3 py-2 text-sm'
+                  placeholder='搜尋地點或會員'
                 />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <RxAvatar size={80} className="text-text-secondary" />
-                </div>
-              )}
-            </div>
-
-            {/* 資料區 */}
-            <div className="p-4 space-y-3">
-              {/* 名稱 + 年齡 + 性別 */}
-              <div>
-                <div className="flex items-baseline gap-2">
-                  <h2 className="text-text-primary font-bold text-xl">{profile.nickname}</h2>
-                  {profile.birthday && (
-                    <span className="text-text-secondary text-sm">{calculateAge(profile.birthday)} 歲</span>
-                  )}
-                  {profile.gender && (
-                    <span className="text-text-secondary text-sm">{genderLabel[profile.gender]}</span>
-                  )}
-                </div>
+                <button className='px-1.5'>
+                  <FiSearch size={25} className='p-0.5'/>
+                </button>
               </div>
-
-              {/* 自我介紹 */}
-              {profile.bio && (
-                <p className="text-text-secondary text-sm text-left leading-relaxed">{profile.bio}</p>
-              )}
-
-              {/* 運動偏好 */}
-              {sports.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {sports.map(sport => (
-                    <span
-                      key={sport}
-                      className="text-xs px-2.5 py-1 rounded-full bg-bg-tertiary text-text-secondary border border-border"
-                    >
-                      {sport}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* 常去地點 */}
-              {locations.length > 0 && (
-                <div className="text-left space-y-1 pt-1">
-                  <p className="text-text-secondary text-xs">常去地點</p>
-                  {locations.map(loc => (
-                    <p key={loc} className="text-text-primary text-sm">📍 {loc}</p>
-                  ))}
-                </div>
-              )}
+              {/* 手機版篩選觸發扭 */}
+              <button
+                onClick={() => setShowMobileFilter(true)}
+                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-text-secondary text-sm hover:border-primary hover:text-text-primary transition relative"
+              >
+                <FiSliders size={14} />
+                <span>篩選</span>
+                {/* 已啟用篩選條件數量 badge */}
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary text-bg-primary text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
             </div>
-          </div>
-        )}
 
-        <p className="text-text-secondary">這是探索頁面</p>
-        <p className="text-text-secondary text-sm">（目前暫時顯示用戶填寫的資料，後面會開發完整功能）</p>
-        {/* 登出按鈕 */}
+            <nav className='order-2 md:order-1 flex gap-1 justify-center'>
+              <button
+                className={cn("px-4 py-2 text-sm font-medium border-b-2 transition",
+                  activeTab === 'common'
+                    ? 'text-primary border-primary'
+                    : 'text-text-secondary border-transparent hover:text-text-primary'
+                )}
+                onClick={() => setActiveTab('common')}
+              >
+                共同地點
+              </button>
+              <button
+                className={cn("px-4 py-2 text-sm font-medium border-b-2 transition",
+                  activeTab === 'nearby'
+                    ? 'text-primary border-primary'
+                    : 'text-text-secondary border-transparent hover:text-text-primary'
+                )}
+                onClick={() => setActiveTab('nearby')}
+              >
+                附近的人
+              </button>
+            </nav>
+
+          </div>
+          
+
+          {/* Tab */}
+          <nav>
+
+          </nav>
+
+          {/* 用戶卡牌區 */}
+          <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
+            {MOCK_USERS.map((u)=>(
+              <UserCard key={u.id} profile={u}/>
+            ))}
+          </section>
+
+        </div>
+
+        {/* 暫時的登出按鈕 */}
         <button
           onClick={handleLogout}
-          className="w-full py-2 rounded-md border border-border text-text-secondary text-sm hover:bg-bg-secondary transition"
+          className="mt-8 w-full py-2 rounded-md border border-border text-text-secondary text-sm hover:bg-bg-secondary transition"
         >
           登出
         </button>
       </div>
+
+      {/* 手機版全螢幕篩選器 Modal */}
+      <MobileFilterModal
+        isOpen={showMobileFilter}
+        onClose={() => setShowMobileFilter(false)}
+        activeTab={activeTab}
+      />
     </div>
   )
 }

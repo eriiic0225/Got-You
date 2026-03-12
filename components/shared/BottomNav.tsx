@@ -29,7 +29,7 @@ function BottomNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-bg-secondary border-t border-border z-50">
       <ul className="flex">
-        {navItems.map(({ href, label, Icon, unreadCount }) => {
+        {navItems.map(({ href, label, Icon, unreadCount }) => { // 參數這邊直接解構取出
           // startsWith 讓子路徑也能正確 highlight，例如 /posts/123 時揪團仍是 active
           const isActive = pathname.startsWith(href)
           return (
@@ -42,7 +42,7 @@ function BottomNav() {
               >
                 {/* icon + 未讀 badge */}
                 <div className="relative">
-                  <Icon size={22} /> {/* 利用變數帶入 React Icon */}
+                  <Icon size={22} /> {/* 利用變數直接帶入 React Icon */}
                   {/* 只有 unreadCount > 0 才顯示 badge */}
                   {unreadCount != null && unreadCount > 0 && (
                     <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
@@ -50,7 +50,7 @@ function BottomNav() {
                     </span>
                   )}
                 </div>
-                <span className="text-xs">{label}</span>
+                <span className="text-[10px]">{label}</span>
               </Link>
             </li>
           )

@@ -1,6 +1,6 @@
 # Got You 咖揪 - Claude 開發指南
 
-> 最後更新：2026-02-26 | 作者：Eric
+> 最後更新：2026-03-10 | 作者：Eric（篩選器設計決策 updated）
 
 > ⚠️ **給 Claude/Codex 的重要說明**：這份文件是早期規劃時建立的，部分內容可能已過時。
 > 若使用者的要求與文件有衝突，**請先向使用者確認**，確認後以使用者說的版本為準，並更新此文件。
@@ -28,14 +28,19 @@
 
 - ✅ Landing Page（簡化版）
 - ✅ 會員系統（Email + Google OAuth）
-- ⬜ Onboarding（個人資料填寫）
-- ⬜ 探索、揪團、聊天、通知
+- ✅ Onboarding（Step1 個人資料、Step2 運動偏好、Step3 常去地點＋IP/GPS定位）
+- 🔄 探索（UserCard 元件完成、假資料測試中、尚未串接 Supabase RPC、篩選器 scaffold 完成）
+- ⬜ 揪團、聊天、通知
+- ⬜ /profile/me（個人資料頁）
+- ⬜ /profile/me/edit（編輯所有 onboarding 資訊 + 上傳個人照片、增減常去地點）
 
 **Phase 2（Week 6）加分功能：**
 
 - Email 通知（Edge Functions + Resend）
 - 打卡系統、活躍徽章
 - Landing Page 美化
+- 搜尋地點（在 Explore 頁搜尋特定地點的使用者）
+- 搜尋會員（依暱稱等條件搜尋）
 
 ---
 
@@ -167,6 +172,31 @@ export default function ComponentName({ ... }: Props) {
 | `notifications`           | 通知（type: post_comment, comment_reply） |
 
 > 完整 SQL Schema 見 `docs/schema.sql`
+
+---
+
+## 探索頁設計決策
+
+### 篩選器（FilterContent）
+
+篩選條件依 Tab 分開，避免邏輯衝突：
+
+| 篩選項 | 共同地點 Tab | 附近的人 Tab |
+| ------ | ------------ | ------------ |
+| 偏好運動 | ✅ | ✅ |
+| 性別 | ✅ | ✅ |
+| 年齡 | ✅ | ✅ |
+| 距離 | ❌（沒意義） | ✅ |
+| 地點 | ❌（Tab 本身就是地點篩選） | ❌ |
+
+**理由**：「共同地點 Tab」本身就是「按地點篩人」的機制，若篩選器再加地點選項會造成雙重篩選，使用者體驗混亂。
+
+### 搜尋功能（暫緩，Phase 2）
+
+- **搜尋地點**：找去特定地點的所有使用者（非 onboarding 填的地點，全表搜）
+- **搜尋會員**：依暱稱等條件搜尋
+
+核心功能完成後再開發，避免 scope creep。
 
 ---
 

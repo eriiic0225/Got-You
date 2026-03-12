@@ -58,7 +58,7 @@ function PlacesAutocomplete({onPlaceSelect}: Props){
       {suggestions.length > 0 && (
         // absolute 讓 dropdown 浮在內容上方，不影響頁面排版
         // max-h + overflow-y-auto 限制最多顯示約 4 筆，超過可捲動
-        <ul className="absolute z-10 top-full mt-1 px-1 w-full bg-bg-secondary drop-shadow-xl rounded-md overflow-y-auto max-h-75">
+        <ul className="absolute z-10 top-full mt-1 px-1 w-full bg-bg-secondary drop-shadow-xl drop-shadow-border rounded-md overflow-y-auto max-h-75">
           {suggestions.map((suggestion, index) => {
             const prediction = suggestion.placePrediction
             return (

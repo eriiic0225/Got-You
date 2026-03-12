@@ -33,6 +33,7 @@ function OnBoarding(){
   const [ stepCount, setStepCount ] = useState(1)
   const [ avaterFile, setAvaterFile ] = useState<File|null>(null)
   const [ avatarPreviewUrl, setAvatarPreviewUrl ] = useState<string | null>(null)
+  const [ coords, setCoords ] = useState<{latitude: null|number, longitude: null|number}>({latitude: null, longitude: null})
 
   const [ formData, setFormData ] = useState<userInfo>({ //初始狀態
     nickname: "",
@@ -101,7 +102,7 @@ function OnBoarding(){
 
     const {error:userError} = await supabase
       .from("users")
-      .update({...formData, avatar_url: avatarUrl, onboarding_completed: true})
+      .update({...formData, avatar_url: avatarUrl, latitude:coords.latitude, longitude: coords.longitude, onboarding_completed: true})
       .eq("id", user.id)
     if (userError) {
       console.log('userError:', userError)
@@ -171,7 +172,7 @@ function OnBoarding(){
           
           {stepCount === 1 && <Step1Profile toNextStep={toNextStep} setFormData={setFormData} formData={formData} avatarPreviewUrl={avatarPreviewUrl} onAvatarSelect={onAvatarSelect}/>}
           {stepCount === 2 && <Step2Sports toNextStep={toNextStep} onComplete={onStep2Complete} initialSelectedSports={selectedSports} />}
-          {stepCount === 3 && <Step3Locations selectedPlaces={selectedPlaces} setSelectedPlaces={setSelectedPlaces} completeOnboarding={completeOnboarding} isSubmitting={isSubmitting} submitError={submitError}/>}
+          {stepCount === 3 && <Step3Locations selectedPlaces={selectedPlaces} setSelectedPlaces={setSelectedPlaces} completeOnboarding={completeOnboarding} isSubmitting={isSubmitting} submitError={submitError} setCoords={setCoords}/>}
         </div>
         
       </div>
