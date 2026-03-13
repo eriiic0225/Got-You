@@ -1,6 +1,6 @@
 # Got You 咖揪 - Claude 開發指南
 
-> 最後更新：2026-03-10 | 作者：Eric（篩選器設計決策 updated）
+> 最後更新：2026-03-14 | 作者：Eric（explore 完成、RPC 建立、schema 實際型別補充）
 
 > ⚠️ **給 Claude/Codex 的重要說明**：這份文件是早期規劃時建立的，部分內容可能已過時。
 > 若使用者的要求與文件有衝突，**請先向使用者確認**，確認後以使用者說的版本為準，並更新此文件。
@@ -29,7 +29,7 @@
 - ✅ Landing Page（簡化版）
 - ✅ 會員系統（Email + Google OAuth）
 - ✅ Onboarding（Step1 個人資料、Step2 運動偏好、Step3 常去地點＋IP/GPS定位）
-- 🔄 探索（UserCard 元件完成、假資料測試中、尚未串接 Supabase RPC、篩選器 scaffold 完成）
+- ✅ 探索（RPC 串接完成、共同地點＋附近的人 Tab、加權評分、篩選器、SkeletonCard、GPS 定位）
 - ⬜ 揪團、聊天、通知
 - ⬜ /profile/me（個人資料頁）
 - ⬜ /profile/me/edit（編輯所有 onboarding 資訊 + 上傳個人照片、增減常去地點）
@@ -85,13 +85,15 @@ got-you/
 │   └── profile/          # 個人頁專用
 ├── stores/               # Zustand stores
 │   ├── useAuthStore.ts
+│   ├── useUserStore.ts   # 當前登入用戶的完整 profile（含運動偏好、常去地點）
 │   ├── useExploreStore.ts
 │   ├── useNotificationStore.ts
 │   └── useUIStore.ts
 ├── lib/supabase/
 │   ├── client.ts         # Supabase Client（singleton）
 │   └── server.ts         # Server Component 用
-├── hooks/                # Custom Hooks
+├── hooks/
+│   └── useExploreUsers.ts  # 探索頁 RPC 查詢（get_recommended_users）
 ├── types/                # TypeScript 型別定義
 └── middleware.ts          # 路由保護
 ```
@@ -173,6 +175,16 @@ export default function ComponentName({ ... }: Props) {
 
 > 完整 SQL Schema 見 `docs/schema.sql`
 
+### ⚠️ 實際 Schema 與 schema.sql 差異（重要）
+
+| 欄位 | schema.sql 記載 | 實際 DB 型別 |
+| ---- | --------------- | ------------ |
+| `users.birthday` | `text` | `text`（非 DATE，RPC 內需 `birthday::DATE` 轉型） |
+| `user_gym_locations.location_id` | `text` | `text`（FK 指向 `gym_locations.google_place_id`，**非** `gym_locations.id`） |
+| `gym_locations.id` | `uuid` | `uuid` |
+
+**影響**：`get_recommended_users` RPC 的 gym_locations JOIN 必須用 `gl.google_place_id = ugl.location_id`，不能用 `gl.id = ugl.location_id`（會 `uuid = text` 錯誤）。
+
 ---
 
 ## 探索頁設計決策
@@ -190,6 +202,33 @@ export default function ComponentName({ ... }: Props) {
 | 地點 | ❌（Tab 本身就是地點篩選） | ❌ |
 
 **理由**：「共同地點 Tab」本身就是「按地點篩人」的機制，若篩選器再加地點選項會造成雙重篩選，使用者體驗混亂。
+
+### RPC：`get_recommended_users`
+
+Supabase PostgreSQL 函式，負責探索頁的用戶推薦與篩選。
+
+**參數**：
+- `p_tab TEXT`：`'common'`（共同地點）或 `'nearby'`（附近的人）
+- `p_sport_ids UUID[]`：運動類型篩選（空陣列 = 不篩）
+- `p_genders TEXT[]`：性別篩選（空陣列 = 不篩）
+- `p_age_min INT`、`p_age_max INT`：年齡範圍
+- `p_max_distance FLOAT`：距離上限（km，僅 nearby tab 使用）
+
+**加權評分**（`score` 欄位）：
+- 共同常去地點：每個 ×5
+- 共同運動偏好：每個 ×3
+- 年齡相差 5 歲以內：+2
+- 相同性別：+1
+
+**排序**：`ORDER BY distance_km ASC NULLS LAST, score DESC`
+- common tab：distance_km 全為 NULL → NULLS LAST 讓分數主導
+- nearby tab：先按距離近，再按分數排
+
+**PostGIS**：使用 `ST_DWithin` + `ST_Distance` 計算距離，需 GIST spatial index：
+```sql
+CREATE INDEX idx_users_location ON users
+USING GIST ((ST_MakePoint(longitude::FLOAT, latitude::FLOAT)::geography));
+```
 
 ### 搜尋功能（暫緩，Phase 2）
 
