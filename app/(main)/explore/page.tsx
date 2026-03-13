@@ -15,6 +15,8 @@ import type { UserProfile } from '@/components/explore/UserCard'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/stores/useUserStore'
 import useExploreUser from '@/hooks/useExploreUsers'
+import { supabase } from '@/lib/supabase/client'
+import SkeletonCard from '@/components/explore/SkeletonCard'
 
 // 測試用假資料，串接 RPC 後刪除
 const MOCK_USERS: UserProfile[] = [
@@ -29,12 +31,33 @@ export default function ExplorePage() {
   const router = useRouter()
 
   // 從 Zustand 取得目前的 Tab、切換函式、篩選條件
-  const { profile } = useUserStore()
+  const { profile, fetchUser } = useUserStore()
   const { activeTab, setActiveTab, filters } = useExploreStore()
   const { isLoading, matchedUsers, error } = useExploreUser()
 
   // 手機篩選器 Modal 的開關狀態
   const [showMobileFilter, setShowMobileFilter] = useState(false)
+
+  // 切到「附近的人」tab 時，請求 GPS 定位並更新資料庫
+  // 確保距離計算使用精確的當前位置，而非 onboarding 時的 IP 定位
+  useEffect(() => {
+    if (activeTab !== 'nearby') return
+    if (!navigator.geolocation) return
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        await supabase
+          .from('users')
+          .update({ latitude, longitude })
+          .eq('id', profile?.id)
+        await fetchUser() // 更新 store，觸發 useExploreUsers 重新 fetch
+      },
+      (err) => {
+        console.warn('定位失敗或使用者拒絕授權', err)
+      }
+    )
+  }, [activeTab])
 
 
 
@@ -123,11 +146,28 @@ export default function ExplorePage() {
           </nav>
 
           {/* 用戶卡牌區 */}
-          <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
-            {matchedUsers.map((u)=>(
-              <UserCard key={u.id} profile={u}/>
-            ))}
-          </section>
+          {isLoading ? (
+            // 載入中：skeleton 佔位卡片
+            <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i}/>
+              ))}
+            </section>
+          ) : matchedUsers.length === 0 ? (
+            // 查無結果
+            <div className='mt-16 flex flex-col items-center gap-2 text-text-secondary'>
+              <span className='text-4xl'>🔍</span>
+              <p className='text-sm'>找不到符合條件的使用者</p>
+              <p className='text-xs'>試著調整篩選條件</p>
+            </div>
+          ) : (
+            // 正常顯示卡片
+            <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
+              {matchedUsers.map((u) => (
+                <UserCard key={u.id} profile={u}/>
+              ))}
+            </section>
+          )}
 
         </div>
 

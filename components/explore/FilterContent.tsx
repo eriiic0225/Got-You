@@ -50,7 +50,6 @@ const GENDER_OPTIONS: { value: Gender; label: string }[] = [
   { value: 'nonBinary', label: '非二元' },
 ]
 
-
 // ── 主元件：FilterContent ─────────────────────────────────────
 
 export default function FilterContent({ activeTab, onClose }: FilterContentProps) {

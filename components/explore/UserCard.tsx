@@ -13,6 +13,7 @@ export interface UserCardProfile {
   longitude: number | null
   sport_types: string[]
   locations: string[]
+  distance_km?: number | null
 }
 
 interface UserCardProps {
@@ -69,11 +70,20 @@ function UserCard({ profile }: UserCardProps){
 
         {/* 常去地點 */}
         {profile.locations.length > 0 && (
-          <div className="space-y-0.5 md:flex md:gap-4">
+          <div className="space-y-0.5">
             {profile.locations.map(loc => (
-              <p key={loc} className="text-text-secondary text-xs truncate">📍 {loc}</p>
+              <p key={loc} title={loc} className="text-text-secondary text-xs truncate">📍 {loc}</p>
             ))}
           </div>
+        )}
+
+        {/* 距離（只有 nearby tab 才有值） */}
+        {profile.distance_km != null && (
+          <p className="text-text-secondary text-xs">
+            🧭  距離 {profile.distance_km < 1
+              ? `${Math.round(profile.distance_km * 1000)} 公尺`
+              : `${profile.distance_km.toFixed(1)} 公里`}
+          </p>
         )}
 
         {/* 自我介紹（桌機版才顯示） */}
