@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from 'next/navigation'
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { useUserStore } from "@/stores/useUserStore";
 
 // const fieldTitleClassese = ""
 // const inputClassese = ""
@@ -29,6 +30,7 @@ function OnBoarding(){
 
   const router = useRouter()
   const user = useAuthStore((state)=>state.user)
+  const fetchUser = useUserStore((state)=>state.fetchUser)
   const isAuthLoading = useAuthStore((state)=>state.isLoading)
   const [ stepCount, setStepCount ] = useState(1)
   const [ avaterFile, setAvaterFile ] = useState<File|null>(null)
@@ -133,7 +135,7 @@ function OnBoarding(){
       return
     }
 
-
+    await fetchUser() // 抓取使用者剛填好的資料到zustand存放
     router.push("/explore")
   }
 

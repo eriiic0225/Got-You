@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { RxAvatar } from 'react-icons/rx';
 import { calculateAge } from '@/lib/utils';
 
-export interface UserProfile {
+export interface UserCardProfile {
   id: string
   avatar_url: string | null
   nickname: string
@@ -16,7 +16,7 @@ export interface UserProfile {
 }
 
 interface UserCardProps {
-  profile: UserProfile
+  profile: UserCardProfile
 }
 
 // 用來把對應的gender轉換為文字

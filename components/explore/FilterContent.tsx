@@ -11,7 +11,6 @@ import { useExploreStore } from '@/stores/useExploreStore'
 import type { ExploreTab, Gender } from '@/stores/useExploreStore'
 import { cn } from '@/lib/utils'
 import * as Slider from '@radix-ui/react-slider'
-import { filter } from 'framer-motion/client'
 
 // ── 型別定義 ────────────────────────────────────────────────
 
@@ -88,7 +87,6 @@ export default function FilterContent({ activeTab, onClose }: FilterContentProps
 
         if (error) throw error
         setSportTypes(data ?? [])
-        console.log(data)
       } catch (err){
         console.error('載入運動類型失敗', err)
       }
@@ -134,7 +132,11 @@ export default function FilterContent({ activeTab, onClose }: FilterContentProps
     // 只寫 cat 的話，會變成多出一個叫 cat 的屬性，不會改到舊的
   }
 
-  const handleReset = () => resetFilters()
+  const handleReset = () => {
+    resetFilters()
+    setLocalAge([18, 60])
+    setLocalDistance(10)
+  }
 
   const hasActiveFilters = 
     filters.sportTypeIds.length > 0 ||

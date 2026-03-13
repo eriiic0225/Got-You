@@ -3,7 +3,7 @@
 // 探索頁：顯示推薦使用者卡片
 // 左側（桌機）或頂部按鈕（手機）有篩選器，Tab 切換「共同地點」和「附近的人」
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { FiSearch, FiSliders } from 'react-icons/fi'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -13,6 +13,8 @@ import DesktopFilterSidebar from '@/components/explore/DesktopFilterSidebar'
 import MobileFilterModal from '@/components/explore/MobileFilterModal'
 import type { UserProfile } from '@/components/explore/UserCard'
 import { cn } from '@/lib/utils'
+import { useUserStore } from '@/stores/useUserStore'
+import useExploreUser from '@/hooks/useExploreUsers'
 
 // 測試用假資料，串接 RPC 後刪除
 const MOCK_USERS: UserProfile[] = [
@@ -27,11 +29,17 @@ export default function ExplorePage() {
   const router = useRouter()
 
   // 從 Zustand 取得目前的 Tab、切換函式、篩選條件
+  const { profile } = useUserStore()
   const { activeTab, setActiveTab, filters } = useExploreStore()
+  const { isLoading, matchedUsers, error } = useExploreUser()
 
   // 手機篩選器 Modal 的開關狀態
   const [showMobileFilter, setShowMobileFilter] = useState(false)
 
+
+
+
+  // 登出之後要移到「個人裡面」
   const handleLogout = async () => {
     await logout()
     router.push('/')
@@ -61,7 +69,7 @@ export default function ExplorePage() {
               <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary'>
                 <input type="text" disabled
                   className='bg-bg-secondary px-3 py-2 text-sm'
-                  placeholder='搜尋地點或會員'
+                  placeholder='搜尋地點或會員(開發中)'
                 />
                 <button className='px-1.5'>
                   <FiSearch size={25} className='p-0.5'/>
@@ -116,7 +124,7 @@ export default function ExplorePage() {
 
           {/* 用戶卡牌區 */}
           <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
-            {MOCK_USERS.map((u)=>(
+            {matchedUsers.map((u)=>(
               <UserCard key={u.id} profile={u}/>
             ))}
           </section>
