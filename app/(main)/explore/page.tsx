@@ -11,20 +11,12 @@ import { useExploreStore } from '@/stores/useExploreStore'
 import UserCard from '@/components/explore/UserCard'
 import DesktopFilterSidebar from '@/components/explore/DesktopFilterSidebar'
 import MobileFilterModal from '@/components/explore/MobileFilterModal'
-import type { UserProfile } from '@/components/explore/UserCard'
 import { cn } from '@/lib/utils'
 import { useUserStore } from '@/stores/useUserStore'
 import useExploreUser from '@/hooks/useExploreUsers'
 import { supabase } from '@/lib/supabase/client'
 import SkeletonCard from '@/components/explore/SkeletonCard'
 
-// 測試用假資料，串接 RPC 後刪除
-const MOCK_USERS: UserProfile[] = [
-  { id: '1', nickname: 'Jack',    birthday: '1998-05-10', gender: 'male',   bio: '喜歡重訓和籃球',   avatar_url: null, latitude: null, longitude: null, sport_types: ['重量訓練', '籃球'], locations: ['World Gym 南京'] },
-  { id: '2', nickname: 'William', birthday: '1996-03-22', gender: 'male',   bio: '目標增肌減脂',     avatar_url: null, latitude: null, longitude: null, sport_types: ['重量訓練'], locations: ['健身工廠 中山'] },
-  { id: '3', nickname: 'Lisa',    birthday: '2000-11-01', gender: 'female', bio: '瑜珈＋慢跑愛好者', avatar_url: null, latitude: null, longitude: null, sport_types: ['瑜珈', '慢跑'], locations: ['World Gym 南京', '大安森林公園'] },
-  { id: '4', nickname: 'Tony',    birthday: '1995-08-15', gender: 'male',   bio: '',                avatar_url: null, latitude: null, longitude: null, sport_types: ['籃球', '游泳'], locations: ['信義運動中心'] },
-]
 
 export default function ExplorePage() {
   const logout = useAuthStore((state) => state.logout)
@@ -133,7 +125,7 @@ export default function ExplorePage() {
                 )}
                 onClick={() => setActiveTab('nearby')}
               >
-                附近的人
+                附近用戶
               </button>
             </nav>
 

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { Gender } from "./useExploreStore";
 import { supabase } from "@/lib/supabase/client";
 
+// 用戶本人的資料型別，跟其他 UserBase 的不同，需要多儲存運動和地點的 id (之後搜尋用)
 export interface UserProfile {
   id: string | null
   nickname: string | null,

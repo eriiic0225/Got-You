@@ -1,18 +1,10 @@
 import Link from 'next/link'
 import { RxAvatar } from 'react-icons/rx';
 import { calculateAge } from '@/lib/utils';
+import type { UserBase } from '@/types/user'
 
-export interface UserCardProfile {
-  id: string
-  avatar_url: string | null
-  nickname: string
-  birthday: string
-  gender: 'male' | 'female' | 'nonBinary' | null
-  bio: string
-  latitude: number | null
-  longitude: number | null
-  sport_types: string[]
-  locations: string[]
+// 探索頁卡牌專用型別：在共用 UserBase 上加上距離欄位（附近的人 Tab 才有值）
+export interface UserCardProfile extends UserBase {
   distance_km?: number | null
 }
 
@@ -25,7 +17,7 @@ const genderLabel = { male: '男', female: '女', nonBinary: '非二元' }
 
 function UserCard({ profile }: UserCardProps){
   return(
-    <Link href={`/explore/${profile.id}`} className="block bg-bg-secondary rounded-2xl overflow-hidden drop-shadow-xl transition hover:-translate-y-1">
+    <Link href={`/profile/${profile.id}`} className="block bg-bg-secondary rounded-2xl overflow-hidden drop-shadow-xl transition hover:-translate-y-1">
       {/* 頭貼 */}
       <div className="relative h-36 md:h-48 w-full bg-bg-tertiary">
         {profile.avatar_url ? (

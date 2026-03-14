@@ -26,7 +26,7 @@ function useExploreUser(){
             p_genders: filters.genders,
             p_age_min: filters.ageRange[0],
             p_age_max: filters.ageRange[1],
-            ...(activeTab === 'nearby' && { p_max_distance: filters.maxDistance })
+            ...(activeTab === 'nearby' && { p_max_distance: filters.maxDistance }) // 只有附近用戶模式才傳距離限制
           })
 
       console.log(data)
