@@ -1,6 +1,6 @@
 # Got You 咖揪 - Claude 開發指南
 
-> 最後更新：2026-03-14 | 作者：Eric（explore 完成、RPC 建立、schema 實際型別補充）
+> 最後更新：2026-03-16 | 作者：Eric（profile 頁面全部完成）
 
 > ⚠️ **給 Claude/Codex 的重要說明**：這份文件是早期規劃時建立的，部分內容可能已過時。
 > 若使用者的要求與文件有衝突，**請先向使用者確認**，確認後以使用者說的版本為準，並更新此文件。
@@ -30,9 +30,10 @@
 - ✅ 會員系統（Email + Google OAuth）
 - ✅ Onboarding（Step1 個人資料、Step2 運動偏好、Step3 常去地點＋IP/GPS定位）
 - ✅ 探索（RPC 串接完成、共同地點＋附近的人 Tab、加權評分、篩選器、SkeletonCard、GPS 定位）
+- ✅ /profile/me（個人資料頁，含生活照區塊）
+- ✅ /profile/[userId]（他人公開頁）
+- ✅ /profile/me/edit（編輯頭貼、基本資料、運動偏好、常去地點、生活照）
 - ⬜ 揪團、聊天、通知
-- ⬜ /profile/me（個人資料頁）
-- ⬜ /profile/me/edit（編輯所有 onboarding 資訊 + 上傳個人照片、增減常去地點）
 
 **Phase 2（Week 6）加分功能：**
 
@@ -166,6 +167,7 @@ export default function ComponentName({ ... }: Props) {
 | `user_sport_preferences`  | 使用者運動偏好（多對多）                  |
 | `gym_locations`           | 地點（健身房、運動場）                    |
 | `user_gym_locations`      | 使用者常去地點（多對多）                  |
+| `user_photos`             | 使用者生活照 URL（Storage: user-photos bucket） |
 | `group_posts`             | 揪團貼文                                  |
 | `post_comments`           | 留言                                      |
 | `messages`                | 聊天訊息（含 read 狀態）                  |
