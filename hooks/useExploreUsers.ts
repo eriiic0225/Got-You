@@ -36,7 +36,7 @@ function useExploreUser(){
         setError(error.message)
         setIsLoading(false)
       } else {
-        const userList: UserCardProfile[] = data.map((r) => ({
+        const userList: UserCardProfile[] = data.map((r: UserCardProfile) => ({
           id: r.id,
           nickname: r.nickname,
           gender: r.gender,
