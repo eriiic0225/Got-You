@@ -130,12 +130,6 @@ export default function ExplorePage() {
             </nav>
 
           </div>
-          
-
-          {/* Tab */}
-          <nav>
-
-          </nav>
 
           {/* 用戶卡牌區 */}
           {isLoading ? (
@@ -154,7 +148,7 @@ export default function ExplorePage() {
             </div>
           ) : (
             // 正常顯示卡片
-            <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
+            <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 mt-4'>
               {matchedUsers.map((u) => (
                 <UserCard key={u.id} profile={u}/>
               ))}
