@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import UserProfileView, { UserProfileData } from '@/components/profile/UserProfileView'
 import { supabase } from "@/lib/supabase/client"
 import { useUserStore } from "@/stores/useUserStore"
+import SkeletonProfile from "@/components/profile/SkeletonProfile"
 
 function UserProfilePage(){
   
@@ -59,7 +60,11 @@ function UserProfilePage(){
   
 
   // currentUserProfile 還是 null 代表資料尚未載入完成
-  if (!currentUserProfile) return <div>載入中...</div>
+  if (!currentUserProfile) return (
+    <div className="max-w-[1000px] mx-auto py-5 px-5">
+      <SkeletonProfile/>
+    </div>
+  )
 
   return (
     <div className="max-w-[1000px] mx-auto py-5 px-5">

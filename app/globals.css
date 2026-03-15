@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* 明確指定 Tailwind v4 要掃描的來源目錄
-   原因：Next.js 16 Turbopack 模式下，新增的子目錄（如 components/explore、app/(main)/explore）
-   有時不會被自動偵測，導致這些檔案裡的 class 無法出現在產生的 CSS 中。
+  原因：Next.js 16 Turbopack 模式下，新增的子目錄（如 components/explore、app/(main)/explore）
+  有時不會被自動偵測，導致這些檔案裡的 class 無法出現在產生的 CSS 中。
    @source 強制 Tailwind 掃描指定路徑，確保所有 utility class 都被包含。 */
 @source "../app/**/*.{ts,tsx}";
 @source "../components/**/*.{ts,tsx}";
@@ -70,6 +70,25 @@
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
+}
+
+/* Accordion 展開／收合動畫 keyframes
+   使用 Radix UI 注入的 CSS 變數 --radix-accordion-content-height 做到高度自適應 */
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to   { height: 0; }
+}
+
+/* 在 @theme 裡把 keyframes 掛成 Tailwind animation utility
+   這樣就能用 animate-accordion-down / animate-accordion-up 這兩個 class */
+@theme {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up:   accordion-up   0.2s ease-out;
 }
 
 /* 設定全域背景和文字顏色 */
