@@ -100,8 +100,8 @@ export default function EditSportTypesSection({ profile }: EditSportTypesSection
       if (isSelected) {
         handleRemove(sport.id)
       }else{
-        if (selectedSports.length >= 5){
-          setError("最多只能選擇5項偏好運動！")
+        if (selectedSports.length >= MAX_SPORT_TYPES){
+          setError(`最多只能選擇 ${MAX_SPORT_TYPES} 項偏好運動！`)
           setTimeout(()=>{
             setError("")
           }, 5000)

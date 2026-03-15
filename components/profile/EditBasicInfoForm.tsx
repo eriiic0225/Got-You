@@ -126,16 +126,18 @@ export default function EditBasicInfoForm({ profile }: EditBasicInfoFormProps) {
           )}
         </div>
 
-        {error && <p className="text-red-400 text-xs">{error}</p>}
-        {success && <p className="text-accent text-xs">已儲存！</p>}
+        {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+        {success && <p className="text-accent text-xs text-center">已儲存！</p>}
 
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="w-full py-2 rounded-xl bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition disabled:opacity-50"
-        >
-          {isSaving ? '儲存中...' : '儲存變更'}
-        </button>
+        <div className='flex justify-center'>
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="mx-auto w-1/3 min-w-[270px] py-2 rounded-lg bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition disabled:opacity-50"
+          >
+            {isSaving ? '儲存中...' : '儲存基本資料變更'}
+          </button>
+        </div>
 
       </form>
     </div>

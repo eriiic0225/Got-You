@@ -94,13 +94,13 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
                 {/* 自己的頁面：編輯資料 + 登出 */}
                 <Link
                   href='/profile/me/edit'
-                  className='w-full text-center py-2 rounded-xl bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition'
+                  className='w-full text-center py-2 rounded-lg bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition'
                 >
                   編輯資料
                 </Link>
                 <button 
                   onClick={handleSignOut}
-                  className='w-full text-center py-2 rounded-xl text-text-secondary text-sm hover:text-text-primary transition'>
+                  className='w-full text-center py-2 rounded-lg text-text-secondary text-sm hover:text-text-primary transition'>
                   登出
                 </button>
               </>
@@ -108,7 +108,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
               /* 別人的頁面：發訊息 → 進入聊天室 */
               <Link
                 href={`/chats/${profile.id}`}
-                className='w-full text-center py-2 rounded-xl bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition'
+                className='w-full text-center py-2 rounded-lg bg-primary text-bg-primary font-semibold text-sm hover:bg-primary-hover transition'
               >
                 發訊息
               </Link>
@@ -160,7 +160,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
             <MdSpeakerNotes className='text-primary' />
             <h3 className='font-semibold'>自我介紹</h3>
           </div>
-          <p className='text-text-secondary text-sm leading-relaxed'>
+          <p className='text-text-secondary text-sm leading-relaxed whitespace-pre-wrap'>
             {profile.bio || "這個人什麼都沒留下..."}
           </p>
         </div>
