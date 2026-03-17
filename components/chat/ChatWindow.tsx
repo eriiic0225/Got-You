@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/useUserStore"
 import type { ConversationPartner, Message } from "@/types/chat"
 import ChatInput from "./ChatInput"
 import MessageBubble from "./MessageBubble"
+import SkeletonChatWindow from "./SkeletonChatWindow"
 import Link from "next/link"
 import { IoMdArrowBack } from "react-icons/io";
 import { isTimeDiffExceeded } from "@/lib/utils"
@@ -149,39 +150,54 @@ export default function ChatWindow({ partnerId }: Props){
           >
             <IoMdArrowBack size={20} className="text-primary"/>
           </Link>
-          {/* 頭貼 */}
-          {partner?.avatar_url
-            ? <img
-                src={partner?.avatar_url}
-                alt="頭貼"
-                className="size-8 rounded-full border border-border object-cover"
-              />
-            : <div className="size-8 rounded-full bg-bg-tertiary border border-border" />}
-          {/* 對方名稱 */}
-          <h3 className="font-semibold">{partner?.nickname}</h3>
+          {/* 頭貼 + 名稱：點擊前往對方的個人頁 */}
+          <Link
+            href={`/profile/${partnerId}`}
+            title="前往用戶資料頁"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            {partner?.avatar_url
+              ? <img
+                  src={partner?.avatar_url}
+                  alt="頭貼"
+                  className="size-8 rounded-full border border-border object-cover"
+                />
+              : <div className="size-8 rounded-full bg-bg-tertiary border border-border" />}
+            {isLoading ? (
+              <div className="h-4 bg-bg-tertiary rounded w-24 animate-pulse" />
+            ) : (
+              <h3 className="font-semibold">{partner?.nickname}</h3>
+            )}
+          </Link>
         </header>
 
-        {/* 訊息列表 */}
-        <div className="flex-1 overflow-y-auto py-2">
-          {messages.map((msg, index)=>{
-            const isOwn = msg.sender_id === profile!.id
-            const nextMsg = messages[index + 1]
-            const isTimeExceeded = isTimeDiffExceeded(msg, nextMsg)
-            const isDifferentSender = nextMsg?.sender_id !== msg.sender_id;
-            const showAvatar = !isOwn && (isDifferentSender || isTimeExceeded)
-            // 有下一則訊息 && 是同一個人 && 時間超過了 -> 加大間距
-            const hasExtraMargin = nextMsg && !isDifferentSender && isTimeExceeded
-            return (
-            <MessageBubble 
-              key={msg.id} 
-              message={msg} isOwn={isOwn} 
-              showAvatar={showAvatar}
-              hasExtraMargin={hasExtraMargin} 
-              partnerAvatar={partner?.avatar_url ?? null}
-            />
-          )
-          })}
-          <div ref={messagesEndRef} />  {/* 捲動錨點 */}
+        {/* 訊息列表：載入中顯示 skeleton，載入完顯示訊息 */}
+        <div className="flex-1 overflow-y-auto pt-2">
+          {isLoading ? (
+            <SkeletonChatWindow />
+          ) : (
+            <>
+              {messages.map((msg, index)=>{
+                const isOwn = msg.sender_id === profile!.id
+                const nextMsg = messages[index + 1]
+                const isTimeExceeded = isTimeDiffExceeded(msg, nextMsg)
+                const isDifferentSender = nextMsg?.sender_id !== msg.sender_id;
+                const showAvatar = !isOwn && (isDifferentSender || isTimeExceeded)
+                // 有下一則訊息 && 是同一個人 && 時間超過了 -> 加大間距
+                const hasExtraMargin = nextMsg && !isDifferentSender && isTimeExceeded
+                return (
+                  <MessageBubble
+                    key={msg.id}
+                    message={msg} isOwn={isOwn}
+                    showAvatar={showAvatar}
+                    hasExtraMargin={hasExtraMargin}
+                    partnerAvatar={partner?.avatar_url ?? null}
+                  />
+                )
+              })}
+              <div ref={messagesEndRef} />  {/* 捲動錨點 */}
+            </>
+          )}
         </div>
 
 

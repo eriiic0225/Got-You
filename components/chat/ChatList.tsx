@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/useUserStore"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import SkeletonChatList from "./SkeletonChatList"
 
 interface Chat {
   partner_id: string
@@ -22,7 +23,7 @@ export default function ChatList(){
 
   const profile = useUserStore(state => state.profile)
   const [chats, setChats] = useState<Chat[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const lastpath = usePathname().split("/chats")[1]
 
@@ -79,6 +80,7 @@ export default function ChatList(){
         console.log("聊天室列表資訊", chatList)
         setChats(chatList as Chat[])
       }
+      setIsLoading(false)
     }
     // 初始 fetch
     fetchChatsPreview(profile.id!)
@@ -98,12 +100,14 @@ export default function ChatList(){
 
   },[profile])
 
+  if (isLoading) return <SkeletonChatList />
+
   return (
     <div>
       <h3 className="ml-3 md:-mt-1 pb-1 md:pb-0 font-semibold text-sm text-text-secondary tracking-wider">
         聊天室列表
       </h3>
-      { chats ? (
+      { chats.length > 0 ? (
         <ul className="space-y-0.5">
           {chats.map(chat => {
             const isActive = lastpath === `/${chat.partner_id}`
@@ -140,8 +144,12 @@ export default function ChatList(){
             </li>
           )})}
         </ul>
-      ):(
-        <div>還沒有任何聊天</div>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-2 pt-20 text-text-secondary">
+          <span className="text-4xl">💬</span>
+          <p className="text-sm font-medium">還沒有任何對話</p>
+          <p className="text-xs">去探索頁找人搭話吧！</p>
+        </div>
       )}
     </div>
   )

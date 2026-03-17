@@ -21,18 +21,20 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }:Prop
   const [isSubmiting, setIsSubmiting] = useState(false)
 
   const handleSend = async() => {
-    if(!content) return // 如果做上傳圖片這邊的判斷條件記得改
+    if(!content.trim()) return // 如果做上傳圖片這邊的判斷條件記得改
     if (!profile?.id) return
     if (isSubmiting) return
 
-
     // 樂觀更新？
+    const sentContent = content // 先把input裡的值複製起來
+    setContent("")  // ← 立刻清空(不然測試時會有一點延遲 UX 體驗不太好)
+
     const tempId = crypto.randomUUID()
     onMessageSent({
       id: tempId,
       sender_id: profile?.id,
       receiver_id: receiverId,
-      content: content,
+      content: sentContent.trim(),
       image_url: null, // 還沒做圖片上傳，暫定null
       is_read: false,
       created_at: new Date().toISOString()
@@ -44,11 +46,12 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }:Prop
       .insert({
         sender_id: profile?.id, 
         receiver_id: receiverId, 
-        content: content.trim()
+        content: sentContent.trim()
       })
 
     if (error) {
       onRollback(tempId)  // 回滾刪除假訊息
+      setContent(sentContent) // 回滾復原沒送出的內容
       setError("訊息傳送失敗！請再試一次")
       setIsSubmiting(false)
       return
@@ -68,7 +71,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }:Prop
   return (
   <>
     {error && <p className="text-red-400 text-xs text-center">{error}</p>}
-    <div className="w-[calc(full-2px)] mx-2 pb-2">
+    <div className="w-[calc(full-2px)] mx-2 py-2">
       <form 
         className="w-full flex items-center" 
         onSubmit={(e) => { e.preventDefault(); handleSend() }}
