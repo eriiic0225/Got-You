@@ -1,5 +1,8 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,4 +22,43 @@ export function calculateAge(birthday: string): number {
   }
 
   return age
+}
+
+// 從ISO轉換時間格式
+export function formatChatTime(isoString: string): string {
+  const date = dayjs(isoString)
+  const now = dayjs()
+
+  const isToday = date.isSame(now, 'date')
+  const isYesterday = date.isSame(now.subtract(1, 'day'), 'date')
+
+
+  if (isToday){
+    return date.format('H:mm')
+  }
+
+  if (isYesterday){
+    return "昨天"
+  }
+
+  return date.format('M/D')
+  
+}
+
+export function formatChatBubbleTime(isoString: string): string {
+  const date = dayjs(isoString)
+  const now = dayjs()
+
+  const isToday = date.isSame(now, 'date')
+  const isYesterday = date.isSame(now.subtract(1, 'day'), 'date')
+
+  if (isToday){
+    return date.format('H:mm')
+  }
+
+  if (isYesterday){
+    return `昨天 ${date.format('H:mm')}`
+  }
+
+  return `${date.format('M/D')} ${date.format('H:mm')}`
 }

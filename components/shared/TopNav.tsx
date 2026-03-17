@@ -7,6 +7,7 @@ import { BiSolidMegaphone } from 'react-icons/bi'
 import { IoChatboxEllipses } from 'react-icons/io5'
 import { BsFillPersonFill } from 'react-icons/bs'
 import type { IconType } from 'react-icons'
+import { useChatStore } from '@/stores/useChatStore'
 
 type NavItem = {
   href: string
@@ -24,6 +25,11 @@ const navItems: NavItem[] = [
 
 function TopNav() {
   const pathname = usePathname()
+  const totalUnread = useChatStore(state => state.totalUnread)
+
+  const items = navItems.map(item => 
+    item.href === '/chats' ? {...item, unreadCount: totalUnread} : item
+  )
 
   return (
     <nav className="hidden md:flex fixed top-0 left-0 right-0 bg-bg-secondary border-b border-border z-50 h-14">
@@ -35,7 +41,7 @@ function TopNav() {
 
         {/* 右側導航 tab */}
         <ul className="flex items-stretch h-14">
-          {navItems.map(({ href, label, Icon, unreadCount }) => {
+          {items.map(({ href, label, Icon, unreadCount }) => {
             const isActive = pathname.startsWith(href)
             return (
               <li key={href}>
@@ -50,7 +56,7 @@ function TopNav() {
                   <div className="relative">
                     <Icon size={18} />
                     {unreadCount != null && unreadCount > 0 && (
-                      <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
+                      <span className="absolute -top-1 -right-1.5 bg-[tomato] text-white text-[8px] font-bold rounded-full min-w-[12px] h-3 flex items-center justify-center px-0.5">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}

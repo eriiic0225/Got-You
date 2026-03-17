@@ -7,6 +7,8 @@ import { BiSolidMegaphone } from 'react-icons/bi'
 import { IoChatboxEllipses } from 'react-icons/io5'
 import { BsFillPersonFill } from 'react-icons/bs'
 import type { IconType } from 'react-icons'
+import { useChatStore } from '@/stores/useChatStore'
+import { cn } from '@/lib/utils'
 
 type NavItem = {
   href: string
@@ -25,11 +27,19 @@ const navItems: NavItem[] = [
 function BottomNav() {
   // usePathname 取得目前路徑，用來判斷哪個 tab 是 active
   const pathname = usePathname()
+  const inChatRoom = pathname.startsWith("/chats/")
+  const totalUnread = useChatStore(state => state.totalUnread)
+
+  const items = navItems.map(item => 
+    item.href === '/chats' ? {...item, unreadCount: totalUnread} : item
+  )
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-bg-secondary border-t border-border z-50">
+    <nav className={cn("md:hidden fixed bottom-0 left-0 right-0 bg-bg-secondary border-t border-border z-50",
+      inChatRoom && "hidden"
+    )}>
       <ul className="flex">
-        {navItems.map(({ href, label, Icon, unreadCount }) => { // 參數這邊直接解構取出
+        {items.map(({ href, label, Icon, unreadCount }) => { // 參數這邊直接解構取出
           // startsWith 讓子路徑也能正確 highlight，例如 /posts/123 時揪團仍是 active
           const isActive = pathname.startsWith(href)
           return (
@@ -45,7 +55,7 @@ function BottomNav() {
                   <Icon size={22} /> {/* 利用變數直接帶入 React Icon */}
                   {/* 只有 unreadCount > 0 才顯示 badge */}
                   {unreadCount != null && unreadCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
+                    <span className="absolute -top-1 -right-1.5 bg-[tomato] text-white text-[8px] font-bold rounded-full min-w-[12px] h-3 flex items-center justify-center px-0.5">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}

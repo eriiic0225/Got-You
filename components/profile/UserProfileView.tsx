@@ -61,7 +61,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
           {/* 頭貼 + 基本資料：-mt-16 讓頭貼跨越 cover 邊界，製造層疊感 */}
           <div className='flex flex-col items-center px-4 pb-5 -mt-20 gap-2'>
             {/* ring-4 ring-bg-secondary 製造頭貼浮起的視覺效果 */}
-            <div className='size-44 rounded-xl ring-4 ring-bg-secondary overflow-hidden'>
+            <div className='size-44 rounded-xl ring-4 bg-bg-tertiary ring-bg-secondary overflow-hidden'>
               {profile.avatar_url
                 ? <img alt='頭貼' src={profile.avatar_url} className="w-full h-full object-cover" />
                 : (

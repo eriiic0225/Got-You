@@ -11,7 +11,6 @@ import EditPhotosSection from '@/components/profile/EditPhotosSection'
 import EditSportTypesSection from '@/components/profile/EditSportTypesSection'
 import EditGymLocationsSection from '@/components/profile/EditGymLocationsSection'
 import { useUserStore } from '@/stores/useUserStore'
-import Link from 'next/link';
 import BacktoProfileMeBtn from '@/components/explore/BacktoProfileMeBtn'
 
 

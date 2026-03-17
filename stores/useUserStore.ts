@@ -36,7 +36,7 @@ export const useUserStore = create<UserState>((set)=>({
       .eq('id', session.user.id)
       .single()
 
-    console.log(data)
+    console.log("目前用戶資料", data)
 
     if (error) { console.error(error); return }
     

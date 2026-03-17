@@ -85,7 +85,7 @@ export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvat
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="group relative size-44 rounded-xl ring-4 ring-bg-secondary overflow-hidden"
+          className="group relative size-44 rounded-xl ring-4 bg-bg-tertiary ring-bg-secondary overflow-hidden"
         >
           {previewUrl ? (
             <img src={previewUrl} alt="頭貼預覽" className="w-full h-full object-cover" />
