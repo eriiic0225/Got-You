@@ -80,11 +80,29 @@ export default function ChatList(){
         setChats(chatList as Chat[])
       }
     }
+    // 初始 fetch
     fetchChatsPreview(profile.id!)
+
+    // 訂閱 Realtime，才能即時更新狀態
+    const myId = profile.id!
+    const channel = supabase.channel(`chatlist-${myId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 別人傳給我的訊息
+        filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', // 我已讀了訊息
+        filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 我傳出去的訊息
+        filter: `sender_id=eq.${myId}` }, () => fetchChatsPreview(myId))
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
+
   },[profile])
 
   return (
     <div>
+      <h3 className="ml-3 md:-mt-1 pb-1 md:pb-0 font-semibold text-sm text-text-secondary tracking-wider">
+        聊天室列表
+      </h3>
       { chats ? (
         <ul className="space-y-0.5">
           {chats.map(chat => {
@@ -100,10 +118,10 @@ export default function ChatList(){
                 {/* 頭像 */}
                 {chat.avatar_url
                   ? <img
-                      className="size-10 aspect-square rounded-full border border-border shrink-0"
+                      className="size-10 aspect-square rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
                       src={chat.avatar_url} alt="頭貼"/>
                   : <div
-                      className="size-10 bg-bg-tertiary rounded-full border border-border shrink-0"
+                      className="size-10 bg-bg-tertiary rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
                   ></div>}
                 {/* 人名跟最後一則訊息 */}
                 <div className="grow min-w-0">

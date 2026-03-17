@@ -2,8 +2,8 @@
 // (main) 群組下所有頁面共用的 layout（explore、posts、chats、profile）
 // 自動套用 TopNav（桌機）和 BottomNav（手機）
 
-import BottomNav from '@/components/shared/BottomNav'
 import TopNav from '@/components/shared/TopNav'
+import MobileBottomNav from '@/components/shared/MobileBottomNav'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,15 +12,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <TopNav />
 
       {/* 主要內容區：
-          - md:pt-14  → 桌機版讓出頂部 nav 的高度
-          - pb-[65px] → 手機版讓出底部 nav 的高度
-          - md:pb-0   → 桌機版不需要底部留白 */}
-      <main className="md:pt-14 pb-[65px] md:pb-0">
+          - md:pt-14 → 桌機版讓出頂部 nav 的高度
+          - 底部留白改由 MobileBottomNav 內的 spacer 處理，
+            這樣在聊天室（/chats/[userId]）時可以連同 spacer 一起隱藏 */}
+      <main className="md:pt-14">
         {children}
+        {/* 手機版底部 nav + spacer（聊天室內會自動隱藏） */}
+        <MobileBottomNav />
       </main>
-
-      {/* 手機版：底部導航 */}
-      <BottomNav />
     </div>
   )
 }

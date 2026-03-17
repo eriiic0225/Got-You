@@ -8,6 +8,7 @@ import ChatInput from "./ChatInput"
 import MessageBubble from "./MessageBubble"
 import Link from "next/link"
 import { IoMdArrowBack } from "react-icons/io";
+import { isTimeDiffExceeded } from "@/lib/utils"
 
 
 interface Props {
@@ -136,10 +137,10 @@ export default function ChatWindow({ partnerId }: Props){
   }
 
   return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full border-r border-border">
 
         {/* header */}
-        <header className="flex gap-2 items-center border-b border-border p-2">
+        <header className="flex gap-2 items-center border-b border-border p-2 shadow">
           {/* 返回按鍵 */}
           <Link 
             href="/chats" 
@@ -165,12 +166,17 @@ export default function ChatWindow({ partnerId }: Props){
           {messages.map((msg, index)=>{
             const isOwn = msg.sender_id === profile!.id
             const nextMsg = messages[index + 1]
-            const showAvatar = (msg.sender_id !== nextMsg?.sender_id) && (!isOwn)
+            const isTimeExceeded = isTimeDiffExceeded(msg, nextMsg)
+            const isDifferentSender = nextMsg?.sender_id !== msg.sender_id;
+            const showAvatar = !isOwn && (isDifferentSender || isTimeExceeded)
+            // 有下一則訊息 && 是同一個人 && 時間超過了 -> 加大間距
+            const hasExtraMargin = nextMsg && !isDifferentSender && isTimeExceeded
             return (
             <MessageBubble 
               key={msg.id} 
               message={msg} isOwn={isOwn} 
-              showAvatar={showAvatar} 
+              showAvatar={showAvatar}
+              hasExtraMargin={hasExtraMargin} 
               partnerAvatar={partner?.avatar_url ?? null}
             />
           )

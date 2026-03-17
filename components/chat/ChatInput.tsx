@@ -68,7 +68,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }:Prop
   return (
   <>
     {error && <p className="text-red-400 text-xs text-center">{error}</p>}
-    <div className="w-[calc(full-2px)] mx-1">
+    <div className="w-[calc(full-2px)] mx-2 pb-2">
       <form 
         className="w-full flex items-center" 
         onSubmit={(e) => { e.preventDefault(); handleSend() }}
