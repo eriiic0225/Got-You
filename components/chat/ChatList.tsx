@@ -96,7 +96,7 @@ export default function ChatList(){
         filter: `sender_id=eq.${myId}` }, () => fetchChatsPreview(myId))
       .subscribe()
 
-    return () => supabase.removeChannel(channel)
+    return () => { supabase.removeChannel(channel) }
 
   },[profile])
 
