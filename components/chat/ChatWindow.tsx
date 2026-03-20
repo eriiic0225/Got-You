@@ -133,6 +133,7 @@ export default function ChatWindow({ partnerId }: Props){
     setMessages(prev => [...prev, newMessage])
   }
 
+  // 回滾樂觀更新了但其實沒送出的訊息
   const handleRollback = (tempId: string) => {
     setMessages(prev => prev.filter(m => m.id !== tempId))
   }

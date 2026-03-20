@@ -29,8 +29,9 @@ export default function ChatList(){
 
   useEffect(()=>{
     if (!profile) return
-    async function fetchChatsPreview(myId: string) {
-      setIsLoading(true)
+    async function fetchChatsPreview(myId: string, showLoadingEffect = false) {
+      // showLoadingEffect 是用來控制要不要有骨架屏loading效果的參數
+      if (showLoadingEffect) setIsLoading(true)
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -68,8 +69,11 @@ export default function ChatList(){
             }
           }
 
-          // Step 3: 累加未讀數（條件：receiver 是我 且 還沒讀）
-          if (msg.receiver_id === myId && !msg.is_read){
+          // Step 3: 累加未讀數（條件：receiver 是我 且 還沒讀 且 不是正在看的對話）
+          // 排除「正在看的對話」是為了避免 race condition：
+          // 新訊息 INSERT → ChatList refetch 時 is_read 可能還是 false（ChatWindow 的 mark-as-read 還沒完成）
+          const isCurrentlyViewing = lastpath === `/${partnerId}`
+          if (msg.receiver_id === myId && !msg.is_read && !isCurrentlyViewing){
             acc[partnerId].unread_count++
           }
 
@@ -83,7 +87,7 @@ export default function ChatList(){
       setIsLoading(false)
     }
     // 初始 fetch
-    fetchChatsPreview(profile.id!)
+    fetchChatsPreview(profile.id!, true)
 
     // 訂閱 Realtime，才能即時更新狀態
     const myId = profile.id!

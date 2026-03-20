@@ -53,13 +53,6 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
           : "bg-bg-tertiary text-text-primary rounded-2xl rounded-bl-sm"
       )}>
 
-        {/* 文字訊息：whitespace-pre-wrap 保留換行；break-words 防止長字串溢出 */}
-        {message.content && (
-          <p className="whitespace-pre-wrap break-words leading-relaxed">
-            {message.content}
-          </p>
-        )}
-
         {/* 圖片訊息（預留，上傳功能完成後啟用） */}
         {message.image_url && (
           <img
@@ -69,7 +62,14 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
           />
         )}
 
-        {/* 傳送時間：顯示在氣泡右下角，字體極小不干擾閱讀 */}
+        {/* 文字訊息：whitespace-pre-wrap 保留換行；break-words 防止長字串溢出 */}
+        {message.content && (
+          <p className="whitespace-pre-wrap break-words leading-relaxed">
+            {message.content}
+          </p>
+        )}
+
+        {/* 傳送時間：顯示在氣泡右下角*/}
         <p className={cn(
           "text-[10px] mt-0.5 text-right",
           isOwn ? "text-bg-primary/60" : "text-text-secondary"
