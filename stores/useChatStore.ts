@@ -3,22 +3,36 @@
 import { supabase } from "@/lib/supabase/client";
 import { create } from "zustand";
 
+
 interface ChatState {
   totalUnread: number
+  currentConversationId: string
   startRealtimeSync: () => Promise<void>
   stopRealtimeSync: () => void
+  setCurrentConversationId: (id: string) => void
 }
 
-export const useChatStore = create<ChatState>((set) => {
+export const useChatStore = create<ChatState>((set, get) => {
 
   const fetchTotalUnread = async (user_id: string) => {
-    const { count, error } = await supabase
+    
+    const { currentConversationId } = get()  // 從 store 讀最新值
+
+    let query = supabase
       .from('messages')
       .select('*', { count: 'exact', head: true })
       .eq('receiver_id', user_id)
       .eq('is_read', false)
 
+    // 如果正在對話內部，排除和該用戶的 unread count
+    if (currentConversationId) {
+      query = query.neq('sender_id', currentConversationId)
+    }
+    
+    const { count, error } = await query
+
     if (error) { console.error(error); return }
+
     set({totalUnread: count ?? 0})
   }
 
@@ -26,6 +40,7 @@ export const useChatStore = create<ChatState>((set) => {
 
   return {
     totalUnread: 0,
+    currentConversationId: "",
 
     startRealtimeSync: async () => {
       if (channel) return  // ← 已經訂閱就不重複建立
@@ -49,11 +64,16 @@ export const useChatStore = create<ChatState>((set) => {
           })
         .subscribe()
     },
+
     stopRealtimeSync: () => {
       if (channel) {
         supabase.removeChannel(channel)
         channel = null
       }
     },
+
+    setCurrentConversationId: (id: string) => {
+      set({currentConversationId: id})
+    }
   }
 })

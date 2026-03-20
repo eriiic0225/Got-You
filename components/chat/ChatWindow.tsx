@@ -10,7 +10,7 @@ import SkeletonChatWindow from "./SkeletonChatWindow"
 import Link from "next/link"
 import { IoMdArrowBack } from "react-icons/io";
 import { isTimeDiffExceeded } from "@/lib/utils"
-
+import { useChatStore } from "@/stores/useChatStore"
 
 interface Props {
   partnerId: string
@@ -19,6 +19,7 @@ interface Props {
 export default function ChatWindow({ partnerId }: Props){
 
   const profile = useUserStore((state) => state.profile)
+  const setCurrentConversationId = useChatStore((state) => state.setCurrentConversationId)
   const [messages, setMessages] = useState<Message[]>([])
   const [partner, setPartner] = useState<ConversationPartner | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -38,11 +39,14 @@ export default function ChatWindow({ partnerId }: Props){
         return
       }
 
+      setCurrentConversationId(data.id)
       setPartner(data as ConversationPartner)
     }
 
     fetchPartner()
-  },[partnerId])
+
+    return () => { setCurrentConversationId("") }
+  },[partnerId, setCurrentConversationId])
 
 
   // 2. 查詢兩人之間的訊息記錄
@@ -103,14 +107,14 @@ export default function ChatWindow({ partnerId }: Props){
           table: 'messages',
           filter: `receiver_id=eq.${profile.id}`
         },
-        (payload) => {
+        async (payload) => {
 
           if (payload.new.sender_id !== partnerId) return
 
           setMessages((prev) => [...prev, payload.new])
 
           // 即時標記為已讀（因為使用者正在看這個對話）
-          supabase
+          await supabase
             .from('messages')
             .update({ is_read: true })
             .eq('id', payload.new.id)

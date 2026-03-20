@@ -3,7 +3,7 @@
 import { supabase } from "@/lib/supabase/client"
 import { cn, formatChatTime } from "@/lib/utils"
 import { useUserStore } from "@/stores/useUserStore"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import SkeletonChatList from "./SkeletonChatList"
@@ -26,6 +26,12 @@ export default function ChatList(){
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const lastpath = usePathname().split("/chats")[1]
+  const lastpathRef = useRef(lastpath)
+
+  // 每次 lastpath 變化就更新 ref（不觸發重渲染）
+  useEffect(()=>{
+    lastpathRef.current = lastpath
+  }, [lastpath])
 
   useEffect(()=>{
     if (!profile) return
@@ -72,7 +78,7 @@ export default function ChatList(){
           // Step 3: 累加未讀數（條件：receiver 是我 且 還沒讀 且 不是正在看的對話）
           // 排除「正在看的對話」是為了避免 race condition：
           // 新訊息 INSERT → ChatList refetch 時 is_read 可能還是 false（ChatWindow 的 mark-as-read 還沒完成）
-          const isCurrentlyViewing = lastpath === `/${partnerId}`
+          const isCurrentlyViewing = lastpathRef.current === `/${partnerId}`
           if (msg.receiver_id === myId && !msg.is_read && !isCurrentlyViewing){
             acc[partnerId].unread_count++
           }
