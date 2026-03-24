@@ -28,6 +28,7 @@ function BottomNav() {
   // usePathname 取得目前路徑，用來判斷哪個 tab 是 active
   const pathname = usePathname()
   const inChatRoom = pathname.startsWith("/chats/")
+  const inPostDetail = pathname.startsWith("/posts/") && pathname !== "/posts/create"
   const totalUnread = useChatStore(state => state.totalUnread)
 
   const items = navItems.map(item => 
@@ -36,7 +37,7 @@ function BottomNav() {
 
   return (
     <nav className={cn("md:hidden fixed bottom-0 left-0 right-0 bg-bg-secondary border-t border-border z-50",
-      inChatRoom && "hidden"
+      (inChatRoom || inPostDetail) && "hidden"
     )}>
       <ul className="flex">
         {items.map(({ href, label, Icon, unreadCount }) => { // 參數這邊直接解構取出

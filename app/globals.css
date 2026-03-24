@@ -96,3 +96,10 @@ body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
 }
+
+/* 覆蓋react dat picker預設樣式 */
+.rdp-root {
+  --rdp-accent-color: #C4DC4A;       /* 選中日期的顏色 → primary */
+  --rdp-accent-background-color: #C4DC4A26; /* 選中背景（半透明）*/
+  --rdp-today-color: #C4DC4A;               /* 今天的日期顏色 */
+}

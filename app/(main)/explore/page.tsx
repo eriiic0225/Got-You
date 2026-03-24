@@ -16,6 +16,7 @@ import { useUserStore } from '@/stores/useUserStore'
 import useExploreUser from '@/hooks/useExploreUsers'
 import { supabase } from '@/lib/supabase/client'
 import SkeletonCard from '@/components/explore/SkeletonCard'
+import useExploreSearch from '@/hooks/useExploreSearch'
 
 
 export default function ExplorePage() {
@@ -29,6 +30,11 @@ export default function ExplorePage() {
 
   // 手機篩選器 Modal 的開關狀態
   const [showMobileFilter, setShowMobileFilter] = useState(false)
+
+
+  // 搜尋匡用的 custom hook + search query
+  const [searchQuery, setSearchQuery] = useState("")
+  const { results: searchResults, isSearching } = useExploreSearch(searchQuery)
 
   // 切到「附近的人」tab 時，請求 GPS 定位並更新資料庫
   // 確保距離計算使用精確的當前位置，而非 onboarding 時的 IP 定位
@@ -52,13 +58,9 @@ export default function ExplorePage() {
   }, [activeTab])
 
 
-
-
-  // 登出之後要移到「個人裡面」
-  const handleLogout = async () => {
-    await logout()
-    router.push('/')
-  }
+  const isSearchMode = searchQuery.trim().length > 0
+  const displayUsers  = isSearchMode ? searchResults : matchedUsers
+  const displayLoading = isSearchMode ? isSearching : isLoading
 
   // 計算有幾個篩選條件已啟用（用來在篩選按鈕上顯示數量 badge）
   const activeFilterCount =
@@ -79,16 +81,28 @@ export default function ExplorePage() {
 
           <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
 
-            <div className='flex gap-2 justify-end order-1 md:order-2'>
+            <div className='flex gap-2 justify-end items-center order-1 md:order-2'>
               {/* 搜尋匡 */}
-              <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary'>
-                <input type="text" disabled
-                  className='bg-bg-secondary px-3 py-2 text-sm'
-                  placeholder='搜尋地點或會員(開發中)'
+              <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary focus-within:border-primary-hover'>
+                <input type="search"
+                  className={cn('bg-bg-secondary px-3 py-2 text-sm focus:outline-none')}
+                  placeholder='搜尋地點或會員'
+                  value={searchQuery}
+                  onChange={(e)=>{setSearchQuery(e.target.value)}}
                 />
-                <button className='px-1.5'>
-                  <FiSearch size={25} className='p-0.5'/>
-                </button>
+              </div>
+              {/* ? icon + tooltip */}
+              <div className="relative group">
+                <span className="text-text-secondary/50 cursor-default text-sm">?</span>
+
+                <div className={cn(`
+                  absolute right-0 top-7 w-57 hidden group-hover:block
+                  bg-bg-tertiary border border-border rounded-lg px-3 py-2
+                  text-xs text-text-secondary shadow-lg z-50 leading-relaxed
+                `)}>
+                  <p>輸入 <span className="text-primary font-medium">@暱稱</span> 搜尋特定會員</p>
+                  <p>或 <span className="text-primary font-medium">地點名稱或地址</span> 找常去該地點的人</p>
+                </div>
               </div>
               {/* 手機版篩選觸發扭 */}
               <button
@@ -132,14 +146,14 @@ export default function ExplorePage() {
           </div>
 
           {/* 用戶卡牌區 */}
-          {isLoading ? (
+          {displayLoading ? (
             // 載入中：skeleton 佔位卡片
             <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 mt-4'>
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonCard key={i}/>
               ))}
             </section>
-          ) : matchedUsers.length === 0 ? (
+          ) : displayUsers.length === 0 ? (
             // 查無結果
             <div className='mt-16 flex flex-col items-center gap-2 text-text-secondary'>
               <span className='text-4xl'>🔍</span>
@@ -149,7 +163,7 @@ export default function ExplorePage() {
           ) : (
             // 正常顯示卡片
             <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 mt-4'>
-              {matchedUsers.map((u) => (
+              {displayUsers.map((u) => (
                 <UserCard key={u.id} profile={u}/>
               ))}
             </section>
@@ -158,12 +172,12 @@ export default function ExplorePage() {
         </div>
 
         {/* 暫時的登出按鈕 */}
-        <button
+        {/* <button
           onClick={handleLogout}
           className="mt-8 w-full py-2 rounded-md border border-border text-text-secondary text-sm hover:bg-bg-secondary transition"
         >
           登出
-        </button>
+        </button> */}
       </div>
 
       {/* 手機版全螢幕篩選器 Modal */}

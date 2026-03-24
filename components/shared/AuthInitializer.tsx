@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useUserStore } from '@/stores/useUserStore'
 import { supabase } from '@/lib/supabase/client'
 import { useChatStore } from '@/stores/useChatStore'
+import { useNotificationStore } from '@/stores/useNotificationStore'
 
 function AuthInitializer(){
   const initAuth = useAuthStore((state) => state.initAuth)
@@ -12,6 +13,8 @@ function AuthInitializer(){
   const fetchUser = useUserStore((state) => state.fetchUser)
   const startRealtimeSync = useChatStore(state => state.startRealtimeSync)
   const stopRealtimeSync = useChatStore(state => state.stopRealtimeSync)
+  const startRealtimeSyncForNotification = useNotificationStore(state => state.startRealtimeSyncForNotification)
+  const stopRealtimeSyncForNotification = useNotificationStore(state => state.stopRealtimeSyncForNotification)
 
   useEffect(()=>{
     // 先做一次初始化（處理一般登入、重整頁面的情況）
@@ -25,6 +28,7 @@ function AuthInitializer(){
         if (session) {        // 登入或 token 刷新時
           fetchUser()         // 重新載入使用者資料
           startRealtimeSync() // 訂閱 unread 狀態
+          startRealtimeSyncForNotification()
         }
       }
     )
@@ -33,8 +37,13 @@ function AuthInitializer(){
     return () => {
       subscription.unsubscribe()
       stopRealtimeSync()
+      stopRealtimeSyncForNotification()
     }
-  },[initAuth, setUser, fetchUser, startRealtimeSync, stopRealtimeSync]) // deps陣列底的東西其實不會改變，只是為了Eslint不要報錯
+  },[
+    initAuth, setUser, fetchUser, 
+    startRealtimeSync, stopRealtimeSync, 
+    startRealtimeSyncForNotification, stopRealtimeSyncForNotification
+  ]) // deps陣列底的東西其實不會改變，只是為了Eslint不要報錯
 
   return null
 }

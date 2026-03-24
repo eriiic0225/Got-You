@@ -33,7 +33,7 @@ function TopNav() {
 
   return (
     <nav className="hidden md:flex fixed top-0 left-0 right-0 bg-bg-secondary border-b border-border z-50 h-14">
-      <div className="w-full max-w-[1200px] mx-auto px-6 flex items-center justify-between">
+      <div className="w-full max-w-[1200px] mx-auto pl-6 flex items-center justify-between">
         {/* 左側 Logo */}
         <Link href="/" className="text-text-primary font-bold text-lg tracking-wide hover:text-primary transition-colors">
           Got You

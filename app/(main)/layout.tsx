@@ -4,6 +4,7 @@
 
 import TopNav from '@/components/shared/TopNav'
 import MobileBottomNav from '@/components/shared/MobileBottomNav'
+import NotificationBell from '@/components/shared/NotificationBell'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           - md:pt-14 → 桌機版讓出頂部 nav 的高度
           - 底部留白改由 MobileBottomNav 內的 spacer 處理，
             這樣在聊天室（/chats/[userId]）時可以連同 spacer 一起隱藏 */}
+      <NotificationBell />
+
       <main className="md:pt-14">
         {children}
         {/* 手機版底部 nav + spacer（聊天室內會自動隱藏） */}

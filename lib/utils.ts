@@ -2,12 +2,18 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import dayjs from 'dayjs'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import 'dayjs/locale/zh-tw' 
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import 'dayjs/locale/zh-tw'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import type { Message } from '@/types/chat';
 
 dayjs.locale('zh-tw')
 dayjs.extend(isSameOrBefore)
+// utc + timezone：讓 dayjs 正確把 Supabase 回傳的 UTC 時間轉成台灣時間（UTC+8）
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Taipei')
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,7 +71,7 @@ export function formatMessageBubbleTime(isoString: string): string {
 
   // 今天 - 7:50
   if (isToday){
-    return date.format('A H:mm')
+    return date.format('A h:mm')
   }
 
   // 昨天 - 昨天 7:50
@@ -97,4 +103,21 @@ export function isTimeDiffExceeded(
   return (
     dayjs(nextMsg.created_at)
       .diff(dayjs(currentMsg.created_at), 'minute') >= thresholdMinutes)
+}
+
+// 整理貼文活動時間格式：3/25（三）下午 2:00
+// dayjs.utc().tz()：先告訴 dayjs 字串是 UTC，再轉成台灣時間，避免顯示錯 8 小時
+export function formatPostTime(isoString: string): string{
+  const now = dayjs()
+  const date = dayjs.utc(isoString).tz()
+
+  if (date.isSame(now, 'year'))
+    return `${date.format('M/D')}（${date.format('dd')}）${date.format('A h:mm')}`
+
+  return `${date.format('YYYY/M/D')} (${date.format('ddd')}) ${date.format('H:mm')}`
+}
+
+// 發文時間（created_at）格式：2026/3/24 18:45
+export function formatCreatedAt(isoString: string): string {
+  return dayjs.utc(isoString).tz().format('YYYY/M/D HH:mm')
 }
