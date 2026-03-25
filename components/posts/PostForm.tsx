@@ -260,16 +260,25 @@ export default function PostForm({ sportTypes }: Props){
 
       </form>
 
-      {/* 發佈按鈕：放在 form 外但透過 form="post_form" 關聯 */}
-      <button
-        form="post_form"
-        type="submit"
-        disabled={isSubmitting}
-        className={cn("w-full py-3 rounded-lg bg-primary text-bg-primary font-semibold text-sm",
-          "hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed")}
-      >
-        {isSubmitting ? '發佈中...' : '發佈揪團'}
-      </button>
+      {/* 底部操作列：取消 + 發佈，放在 form 外 */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => router.push('/posts')}
+          className="flex-1 py-3 rounded-lg border border-border text-text-secondary text-sm font-semibold hover:border-primary/50 hover:text-text-primary transition-colors"
+        >
+          取消
+        </button>
+        <button
+          form="post_form"
+          type="submit"
+          disabled={isSubmitting}
+          className={cn("flex-1 py-3 rounded-lg bg-primary text-bg-primary font-semibold text-sm",
+            "hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed")}
+        >
+          {isSubmitting ? '發佈中...' : '發佈揪團'}
+        </button>
+      </div>
     </div>
   )
 }

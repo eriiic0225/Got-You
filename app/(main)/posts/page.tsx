@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import type { PostWithDetails } from "@/types/post"
 import { supabase } from "@/lib/supabase/client"
+import Link from "next/link"
 import PostCard from "@/components/posts/PostCard"
 import PostFilterBar, { type PostFilters } from "@/components/posts/PostFilterBar"
 
@@ -99,6 +100,17 @@ function PostsPage(){
 
   return (
     <div className="max-w-[1000px] mx-auto px-5 py-8">
+
+      {/* 頁首：標題 + 發文按鈕 */}
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-lg font-semibold text-text-primary">揪團</h1>
+        <Link
+          href="/posts/create"
+          className="px-4 py-2 rounded-lg bg-primary text-bg-primary text-sm font-medium hover:bg-primary-hover transition-colors"
+        >
+          ＋ 發佈揪團
+        </Link>
+      </div>
 
       {/* 篩選列（只有資料載入後才顯示，避免空 chips 一閃而過） */}
       {!isLoading && (
