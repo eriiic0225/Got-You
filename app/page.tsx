@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "@/components/shared/Logo";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
           <p className="text-xl text-text-secondary">
             找到你的運動夥伴
           </p>
+          <Logo/>
         </div>
 
         {/* 主按鈕 */}
