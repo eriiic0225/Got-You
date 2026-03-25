@@ -70,6 +70,8 @@
   --color-error: #EF4444;
   --color-warning: #F59E0B;
   --color-info: #3B82F6;
+
+  --font-audiowide: var(--font-audiowide)
 }
 
 /* Accordion 展開／收合動畫 keyframes
@@ -84,11 +86,49 @@
   to   { height: 0; }
 }
 
+/* Landing Page 入場動畫：從下方淡入 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Landing Page 浮動動畫：上下漂浮 */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes inifinity-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: inifinity-slide 50s linear infinite;
+}
+
 /* 在 @theme 裡把 keyframes 掛成 Tailwind animation utility
    這樣就能用 animate-accordion-down / animate-accordion-up 這兩個 class */
 @theme {
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up:   accordion-up   0.2s ease-out;
+}
+
+/* Landing Page 動畫 class（直接定義，不透過 @theme 機制）
+  原因：Tailwind v4 + Turbopack 組合下，@theme --animate-* 依賴 source scanning，
+  新增 class 有時不會即時被偵測到。直接定義 class 可確保一定被包含在輸出 CSS 中。*/
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out both;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }
 
 /* 設定全域背景和文字顏色 */
