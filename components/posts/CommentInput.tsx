@@ -43,12 +43,12 @@ export default function CommentInput({ postId, onCommentSend, onRollback }: Prop
     onCommentSend({
       id: tempId,
       post_id: postId,
-      user_id: profile.id,
+      user_id: profile.id!,
       parent_id: null,
       content: sentContent,
       created_at: new Date().toISOString(),
       author: {
-        id: profile.id,
+        id: profile.id!,
         nickname: profile.nickname!,
         avatar_url: profile.avatar_url ?? null,
       }
