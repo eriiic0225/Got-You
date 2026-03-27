@@ -17,17 +17,15 @@ interface EditAvatarSectionProps {
 
 export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvatarSectionProps) {
   const fetchUser = useUserStore(state => state.fetchUser)
+  const bumpAvatar = useUserStore(state => state.bumpAvatar)
   const { image, handleUpload, handleRemove, inputRef } = useImage()
 
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [cacheBuster, setCacheBuster] = useState('') // 用來解決快取問題
 
-  // 顯示的預覽 URL：
-  // - 有新選圖片 → 用 blob URL（本地預覽，沒有快取問題）
-  // - 沒有新圖 → 用 DB 的 URL，加上 cacheBuster 避免瀏覽器快取舊圖
-  const previewUrl = image?.url ?? (currentAvatarUrl ? `${currentAvatarUrl}${cacheBuster}` : null)
+  // 顯示的預覽 URL
+  const previewUrl = image?.url ?? currentAvatarUrl
 
   const handleSave = async () => {
     if (!image?.file) return  // 沒有新選圖片就不用儲存
@@ -68,7 +66,7 @@ export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvat
 
     // 步驟 3：重新 fetch，讓 Zustand store 和 profile 頁面反映最新頭貼
     await fetchUser()
-    setCacheBuster(`?t=${Date.now()}`)  // 只觸發一次
+    bumpAvatar()
     handleRemove()  // 清除本地預覽狀態
     setSuccess(true)
     setIsSaving(false)

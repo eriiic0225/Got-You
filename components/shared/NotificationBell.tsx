@@ -1,13 +1,13 @@
 'use client'
 // components/shared/NotificationBell.tsx
 // 懸浮通知鈴鐺：固定在畫面右上角，點擊展開 dropdown 通知列表
-// 手機版：top-4，桌機版：top-16（在 TopNav h-14 的正下方）
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { LuBell } from 'react-icons/lu'
 import { useNotificationStore, type Notification } from '@/stores/useNotificationStore'
 import { cn, formatCreatedAt } from '@/lib/utils'
+import useDraggable from '@/hooks/useDraggable'
 
 // 依照通知類型產生說明文字
 function getNotificationText(type: Notification['type']) {
@@ -21,7 +21,11 @@ function getNotificationText(type: Notification['type']) {
 export default function NotificationBell() {
   const { unreadCount, notifications, markAllRead } = useNotificationStore()
   const [isOpen, setIsOpen] = useState(false)
+  const [isOnLeft, setIsOnLeft] = useState(false)
+  const [isbelow, setIsbelow] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { isDragging, pos, hasMoved, 
+    handlePointerDown, handlePointerMove, handlePointerUp } = useDraggable()
 
   // 點擊元件外部時關閉 dropdown
   useEffect(() => {
@@ -37,16 +41,36 @@ export default function NotificationBell() {
   // 開啟 dropdown 時標記全部已讀
   const handleOpen = () => {
     if (!isOpen) markAllRead()
+    const rect = containerRef.current?.getBoundingClientRect()
+    const left = rect?.left ?? 0
+    const bottom = rect?.bottom ?? 0
+    setIsOnLeft(left < window.innerWidth / 2)
+    // 距離底部不夠放 dropdown（384px - 預設max-h）就往上開
+    setIsbelow(window.innerHeight - bottom < 384)
     setIsOpen(prev => !prev)
   }
 
   return (
-    // 手機：top-4，桌機：top-16（TopNav 高度 h-14 = 56px，再留點間距）
-    <div ref={containerRef} className="fixed top-10 right-4 md:top-25 md:right-4 z-50">
+    <div 
+      ref={containerRef} 
+      className={cn(
+        `fixed md:top-25 md:right-4 top-10 right-4 z-50`,
+      )}
+      style={{
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        transition: isDragging ? 'none' : 'transform 0.3s ease-out',
+        touchAction: 'none' // 防止手機端滾動干擾
+      }}
+    >
 
       {/* ── 鈴鐺按鈕 ── */}
       <button
-        onClick={handleOpen}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={(e)=>{
+          handlePointerUp(e)
+          if (!hasMoved.current) handleOpen()  // 沒移動才展開通知
+        }}
         className={cn(`
             relative flex items-center justify-center size-10 rounded-full
             bg-bg-secondary/50 backdrop-blur-sm border border-border/60
@@ -77,8 +101,10 @@ export default function NotificationBell() {
       {/* ── Dropdown ── */}
       {isOpen && (
         <div className={cn(
-          "absolute top-12 right-0 w-80 max-h-96 overflow-y-auto",
-          "bg-bg-secondary/90 backdrop-blur-xs border border-border rounded-xl shadow-xl"
+          "absolute w-80 max-h-96 overflow-y-auto",
+          "bg-bg-secondary/90 backdrop-blur-xs border border-border rounded-xl shadow-xl",
+          isOnLeft ? "left-0" : "right-0",
+          isbelow ? "bottom-12" : "top-12 "
           )}
         >
 

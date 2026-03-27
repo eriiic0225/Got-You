@@ -1,7 +1,6 @@
 'use client'
 // components/posts/CommentInput.tsx
 // 固定在畫面底部的留言輸入框，永遠顯示
-// /posts/[postId] 的 BottomNav 已隱藏，直接 bottom-0 即可
 
 import { useRef, useState } from 'react'
 import { IoSend } from 'react-icons/io5'

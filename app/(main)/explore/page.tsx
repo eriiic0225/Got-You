@@ -101,7 +101,7 @@ export default function ExplorePage() {
                   text-xs text-text-secondary shadow-lg z-50 leading-relaxed
                 `)}>
                   <p>輸入 <span className="text-primary font-medium">@暱稱</span> 搜尋特定會員</p>
-                  <p>或 <span className="text-primary font-medium">地點名稱或地址</span> 找常去該地點的人</p>
+                  <p>或 <span className="text-primary font-medium">地點名稱/地址</span> 找常去該地點的人</p>
                 </div>
               </div>
               {/* 手機版篩選觸發扭 */}

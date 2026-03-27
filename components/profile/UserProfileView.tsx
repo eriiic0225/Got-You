@@ -11,6 +11,7 @@ import { MdPhotoLibrary } from "react-icons/md";
 import { useRouter } from "next/navigation"
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 // 個人資料頁專用型別：沿用 UserBase（生活照在元件內部 fetch，不透過 prop 傳入）
 export interface UserProfileData extends UserBase {}
@@ -28,6 +29,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
 
   const router = useRouter()
   const [photos, setPhotos] = useState<string[]>([])
+  const logout = useAuthStore(state => state.logout)
 
   // 根據 profile.id 從 user_photos 表撈取生活照 URL
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
   }, [profile.id])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    await logout()
     router.push('/')
   }
 
@@ -99,7 +101,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
                   編輯資料
                 </Link>
                 <button 
-                  onClick={handleSignOut}
+                  onClick={(handleSignOut)}
                   className='w-full text-center py-2 rounded-lg text-text-secondary text-sm hover:text-text-primary transition'>
                   登出
                 </button>

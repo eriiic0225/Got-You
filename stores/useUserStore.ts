@@ -18,11 +18,15 @@ export interface UserProfile {
 
 interface UserState {
   profile : UserProfile | null
+  avatarCacheBuster: string
   fetchUser: () => Promise<void>
+  bumpAvatar: () => void
 }
 
-export const useUserStore = create<UserState>((set)=>({
+export const useUserStore = create<UserState>((set, get)=>({
   profile: null,
+
+  avatarCacheBuster: "",
   
   fetchUser: async () => { 
     const { data: { session } } = await supabase.auth.getSession()
@@ -40,6 +44,8 @@ export const useUserStore = create<UserState>((set)=>({
 
     if (error) { console.error(error); return }
     
+    const buster = get().avatarCacheBuster
+
     set(
       {profile: {
         id: data.id,
@@ -47,7 +53,7 @@ export const useUserStore = create<UserState>((set)=>({
         gender: data.gender,
         birthday: data.birthday,
         bio: data.bio,
-        avatar_url: data.avatar_url,
+        avatar_url: data.avatar_url ? `${data.avatar_url}${buster}` : null,
         longitude: data.longitude,
         latitude: data.latitude,
         sport_preferences: data.user_sport_preferences.flatMap(s => s.sport_types),
@@ -55,5 +61,22 @@ export const useUserStore = create<UserState>((set)=>({
       }
     })
 
+  },
+
+  bumpAvatar: () => {
+    const ts = `?t=${Date.now()}`
+    set((state) => ({ 
+      avatarCacheBuster: ts,
+      profile: state.profile ? {
+        ...state.profile,
+        avatar_url: state.profile.avatar_url
+          ? `${state.profile.avatar_url.split('?')[0]}${ts}` // 去掉舊的 buster 再加新的
+          : null
+      } : null
+    }))
+  },
+
+  clearUser: () => {
+    set({profile: null, avatarCacheBuster: ""})
   }
 }))
