@@ -6,8 +6,10 @@ import { useUserStore } from '@/stores/useUserStore'
 import { supabase } from '@/lib/supabase/client'
 import { useChatStore } from '@/stores/useChatStore'
 import { useNotificationStore } from '@/stores/useNotificationStore'
+import { useRouter } from 'next/navigation'
 
 function AuthInitializer(){
+  const router = useRouter()
   const initAuth = useAuthStore((state) => state.initAuth)
   const setUser = useAuthStore((state) => state.setUser)
   const fetchUser = useUserStore((state) => state.fetchUser)
@@ -44,6 +46,20 @@ function AuthInitializer(){
     startRealtimeSync, stopRealtimeSync, 
     startRealtimeSyncForNotification, stopRealtimeSyncForNotification
   ]) // deps陣列底的東西其實不會改變，只是為了Eslint不要報錯
+
+  // 處理登出後回上一頁，瀏覽器快照跳過 middleware 導致登入檢查異常的狀態
+  useEffect(() => {
+    const handlePageShow = async(event: PageTransitionEvent) => {
+      if (event.persisted){
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) router.push('/login')
+      }
+    }
+
+    window.addEventListener('pageshow', handlePageShow)
+
+    return () => { window.removeEventListener('pageshow', handlePageShow) }
+  }, [])
 
   return null
 }

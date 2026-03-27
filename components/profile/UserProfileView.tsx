@@ -47,6 +47,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
 
   const handleSignOut = async () => {
     await logout()
+    router.refresh() // 清除 next 的 client-side router cache
     router.push('/')
   }
 
