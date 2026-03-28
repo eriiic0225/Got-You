@@ -44,7 +44,7 @@ function PostsPage(){
           sport:sport_types(id, name, icon),
           title, description,
           location_area, location_detail,
-          datetime, max_participants, created_at,
+          event_date, event_time, max_participants, created_at,
           participants_count:post_participants(count),
           comment_count:post_comments(count)
         `)
@@ -66,7 +66,8 @@ function PostsPage(){
         description:      post.description,
         location_area:    post.location_area,
         location_detail:  post.location_detail,
-        datetime:         post.datetime,
+        event_date:       post.event_date,
+        event_time:       post.event_time,
         max_participants: post.max_participants,
         created_at:       post.created_at,
         participants_count: (post.participants_count as unknown as { count: number }[])[0]?.count ?? 0,
@@ -88,8 +89,8 @@ function PostsPage(){
       // 運動類型：有選才篩，空陣列 = 全部顯示
       if (filters.sportTypeIds.length > 0 && !filters.sportTypeIds.includes(post.sport.id)) return false
 
-      // 即將舉行：有設定時間 且 時間已過期 → 過濾掉；沒設時間的不過濾（視為永遠顯示）
-      if (filters.onlyUpcoming && post.datetime && new Date(post.datetime) < now) return false
+      // 即將舉行：有設定日期 且 日期已過 → 過濾掉；沒設日期的不過濾（視為永遠顯示）
+      if (filters.onlyUpcoming && post.event_date && new Date(post.event_date) < now) return false
 
       // 還有名額：有設上限 且 已達上限 → 過濾掉；沒設上限視為名額無限
       if (filters.hasSlots && post.max_participants !== null && post.participants_count >= post.max_participants) return false

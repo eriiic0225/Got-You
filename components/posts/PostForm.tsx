@@ -82,14 +82,8 @@ export default function PostForm({ sportTypes }: Props){
 
   const onSubmit: SubmitHandler<PostInput> = async(payload) => {
 
-    let datetime
-    if (payload.date){
-      datetime = payload.date
-      if (payload.time){
-        datetime += `T${payload.time}`
-      }
-    }
-
+    // date/time 分開存（DB 欄位型別：date + time without timezone）
+    // 不需要 UTC 轉換，直接儲存使用者輸入的本地日期和時間
     const { error } = await supabase
       .from('group_posts')
       .insert({
@@ -99,7 +93,8 @@ export default function PostForm({ sportTypes }: Props){
         description: payload.description,
         location_area:    payload.location_area    ?? null,
         location_detail:  payload.location_detail  ?? null,
-        datetime:         datetime                 ?? null,
+        event_date:       payload.date             || null,
+        event_time:       payload.time             || null,
         max_participants: payload.max_participants ?? null,  // 未填 → NULL（不限人數）
       })
 

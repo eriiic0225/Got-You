@@ -4,6 +4,7 @@
 
 import FilterContent from './FilterContent'
 import type { ExploreTab } from '@/stores/useExploreStore'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 
 interface DesktopFilterSidebarProps {
   activeTab: ExploreTab
@@ -16,9 +17,19 @@ export default function DesktopFilterSidebar({ activeTab }: DesktopFilterSidebar
     // sticky top-[72px]：固定在 TopNav（56px）+ 一些間距的下方，隨頁面滾動
     // self-start：讓側欄高度由內容決定，不會撐滿整個 flex row
     <aside className="hidden md:block w-full shrink-0 sticky top-[72px] self-start mt-2">
-      <div className="bg-bg-secondary rounded-2xl overflow-y-auto max-h-[calc(100vh-88px)]">
+      <OverlayScrollbarsComponent 
+        element="div"
+        options={{
+          scrollbars: {
+            autoHide: 'scroll',
+            autoHideDelay: 500,
+            theme: 'os-theme-light', // 淺色模式：白色半透明滾動條
+          },
+        }}
+        className="bg-bg-secondary rounded-2xl max-h-[calc(100vh-88px)]"
+      >
         <FilterContent activeTab={activeTab} />
-      </div>
+      </OverlayScrollbarsComponent>
     </aside>
   )
 }

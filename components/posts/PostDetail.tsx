@@ -56,12 +56,12 @@ export default function PostDetail({ post }: Props) {
         </h1>
 
         {/* ── 時間 & 地點（有填才顯示）── */}
-        {(post.datetime || locationText) && (
+        {(post.event_date || locationText) && (
           <div className="space-y-2 mb-5">
-            {post.datetime && (
+            {post.event_date && (
               <div className="flex items-center gap-2 text-sm text-text-secondary">
                 <LuCalendar className="size-4 shrink-0 text-primary" strokeWidth={1.5} />
-                <span suppressHydrationWarning>{formatPostTime(post.datetime)}</span>
+                <span>{formatPostTime(post.event_date, post.event_time)}</span>
               </div>
             )}
             {locationText && (

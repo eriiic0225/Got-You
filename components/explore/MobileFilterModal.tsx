@@ -7,6 +7,7 @@
 import { useEffect } from 'react'
 import FilterContent from './FilterContent'
 import type { ExploreTab } from '@/stores/useExploreStore'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 
 interface MobileFilterModalProps {
   isOpen: boolean
@@ -40,9 +41,19 @@ export default function MobileFilterModal({
     <div className="fixed inset-0 z-50 md:hidden flex flex-col bg-bg-primary p-2">
 
       {/* 可捲動的篩選器內容區 */}
-      <div className="flex-1 overflow-y-auto">
+      <OverlayScrollbarsComponent 
+        element="div"
+        options={{
+          scrollbars: {
+            autoHide: 'scroll',
+            autoHideDelay: 500,
+            theme: 'os-theme-light', // 淺色模式：白色半透明滾動條
+          },
+        }} 
+        className="flex-1"
+      >
         <FilterContent activeTab={activeTab} onClose={onClose} />
-      </div>
+      </OverlayScrollbarsComponent>
 
     </div>
   )

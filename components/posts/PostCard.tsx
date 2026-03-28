@@ -65,15 +65,10 @@ function PostCard({ post }: Props){
         </div>
 
         {/* ── 活動時間（選填，null 時整行不顯示）── */}
-        {post.datetime && (
+        {post.event_date && (
           <div className="flex items-center gap-1.5 text-sm text-text-secondary mb-1.5">
             <LuCalendar className="size-3.5 shrink-0 text-primary" strokeWidth={1.5} />
-            <span 
-              suppressHydrationWarning
-              // ↑ 因為伺服器和client端預設的時區不同，所以next會一直報錯，加上這行就可以無視
-            > 
-              {formatPostTime(post.datetime)}
-            </span>
+            <span>{formatPostTime(post.event_date, post.event_time)}</span>
           </div>
         )}
 

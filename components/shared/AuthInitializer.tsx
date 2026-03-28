@@ -29,8 +29,8 @@ function AuthInitializer(){
         setUser(session?.user ?? null) // 所有類型的 event 都會觸發並更新全域 state
         if (session) {        // 登入或 token 刷新時
           fetchUser()         // 重新載入使用者資料
-          startRealtimeSync() // 訂閱 unread 狀態
-          startRealtimeSyncForNotification()
+          startRealtimeSync() // 訂閱聊天訊息的 unread 狀態
+          startRealtimeSyncForNotification() // 訂閱「揪團」相關的通知的狀態
         }
       }
     )
@@ -59,7 +59,7 @@ function AuthInitializer(){
     window.addEventListener('pageshow', handlePageShow)
 
     return () => { window.removeEventListener('pageshow', handlePageShow) }
-  }, [])
+  }, [router])
 
   return null
 }

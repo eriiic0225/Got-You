@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AuthInitializer from '@/components/shared/AuthInitializer'
 import "./globals.css"
+import 'overlayscrollbars/overlayscrollbars.css' // 優化 windows 用戶滾動條使用
 import { Audiowide } from 'next/font/google';
 
 // 設定字體參數
@@ -28,7 +29,7 @@ const audiowide = Audiowide({
     return (
       <html lang="zh-TW" className={audiowide.variable}>
         <body className="antialiased">
-          <AuthInitializer /> {/* 掛載全域使用者狀態的組件 */}
+          <AuthInitializer /> {/* 掛載全域使用者狀態及各種channel監聽啟用的組件 */}
           {children}
         </body>
       </html>

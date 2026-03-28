@@ -7,7 +7,8 @@ export interface GroupPost {
   title: string
   location_area: string | null
   location_detail: string | null
-  datetime: string | null
+  event_date: string | null
+  event_time: string | null
   description: string
   max_participants: number | null
   created_at: string
@@ -28,7 +29,8 @@ export interface PostWithDetails {
   description: string
   location_area: string | null
   location_detail: string | null
-  datetime: string | null
+  event_date: string | null
+  event_time: string | null
   participants_count: number
   comment_count: number
   max_participants: number | null

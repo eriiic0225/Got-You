@@ -32,7 +32,7 @@ function IndividualPostPage(){
           sport:sport_types(id, name, icon),
           title, description,
           location_area, location_detail,
-          datetime, max_participants, created_at,
+          event_date, event_time, max_participants, created_at,
           participants_count:post_participants(count),
           comment_count:post_comments(count)
         `)
@@ -54,7 +54,8 @@ function IndividualPostPage(){
             description:      postData.description,
             location_area:    postData.location_area,
             location_detail:  postData.location_detail,
-            datetime:         postData.datetime,
+            event_date:       postData.event_date,
+            event_time:       postData.event_time,
             max_participants: postData.max_participants,
             created_at:       postData.created_at,
             participants_count: (postData.participants_count as unknown as { count: number }[])[0]?.count ?? 0,

@@ -106,15 +106,24 @@ export function isTimeDiffExceeded(
 }
 
 // 整理貼文活動時間格式：3/25（三）下午 2:00
-// dayjs.utc().tz()：先告訴 dayjs 字串是 UTC，再轉成台灣時間，避免顯示錯 8 小時
-export function formatPostTime(isoString: string): string{
+// 分開接收 date（YYYY-MM-DD）和 time（HH:MM 或 null），直接用本地時間顯示，不做時區轉換
+// DB 儲存的是 date（無時區）+ time（無時區），顯示時不需要 UTC 轉換
+export function formatPostTime(eventDate: string, eventTime: string | null): string {
   const now = dayjs()
-  const date = dayjs.utc(isoString).tz()
+  const date = dayjs(eventDate)
 
-  if (date.isSame(now, 'year'))
-    return `${date.format('M/D')}（${date.format('dd')}）${date.format('A h:mm')}`
+  // 只有日期，沒有指定時間
+  if (!eventTime) {
+    if (date.isSame(now, 'year'))
+      return `${date.format('M/D')}（${date.format('dd')}）`
+    return `${date.format('YYYY/M/D')}（${date.format('dd')}）`
+  }
 
-  return `${date.format('YYYY/M/D')} (${date.format('ddd')}) ${date.format('H:mm')}`
+  // 有日期也有時間，直接拼接後解析（本地時間，不做 UTC 轉換）
+  const datetime = dayjs(`${eventDate}T${eventTime}`)
+  if (datetime.isSame(now, 'year'))
+    return `${datetime.format('M/D')}（${datetime.format('dd')}）${datetime.format('A h:mm')}`
+  return `${datetime.format('YYYY/M/D')}（${datetime.format('dd')}）${datetime.format('H:mm')}`
 }
 
 // 發文時間（created_at）格式：2026/3/24 18:45

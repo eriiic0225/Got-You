@@ -11,6 +11,7 @@ import Link from "next/link"
 import { IoMdArrowBack } from "react-icons/io";
 import { isTimeDiffExceeded } from "@/lib/utils"
 import { useChatStore } from "@/stores/useChatStore"
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 
 interface Props {
   partnerId: string
@@ -177,7 +178,17 @@ export default function ChatWindow({ partnerId }: Props){
         </header>
 
         {/* 訊息列表：載入中顯示 skeleton，載入完顯示訊息 */}
-        <div className="flex-1 overflow-y-auto pt-2">
+        <OverlayScrollbarsComponent 
+          className="flex-1 pt-2"
+          element="div"
+          options={{
+            scrollbars: {
+              autoHide: 'scroll',
+              autoHideDelay: 500,
+              theme: 'os-theme-light', // 淺色模式：白色半透明滾動條
+            },
+          }}
+        >
           {isLoading ? (
             <SkeletonChatWindow />
           ) : (
@@ -203,7 +214,7 @@ export default function ChatWindow({ partnerId }: Props){
               <div ref={messagesEndRef} />  {/* 捲動錨點 */}
             </>
           )}
-        </div>
+        </OverlayScrollbarsComponent>
 
 
         {/* 輸入框 */}
