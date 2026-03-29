@@ -20,8 +20,6 @@ import useExploreSearch from '@/hooks/useExploreSearch'
 
 
 export default function ExplorePage() {
-  const logout = useAuthStore((state) => state.logout)
-  const router = useRouter()
 
   // 從 Zustand 取得目前的 Tab、切換函式、篩選條件
   const { profile, fetchUser } = useUserStore()
@@ -60,7 +58,7 @@ export default function ExplorePage() {
 
   const isSearchMode = searchQuery.trim().length > 0
   const displayUsers  = isSearchMode ? searchResults : matchedUsers
-  const displayLoading = isSearchMode ? isSearching : isLoading
+  const displayLoading = isSearchMode ? isSearching : isLoading // 判斷不同的loading狀態（搜尋模式 -> isSearching, 普通模式 -> isLoading）
 
   // 計算有幾個篩選條件已啟用（用來在篩選按鈕上顯示數量 badge）
   const activeFilterCount =

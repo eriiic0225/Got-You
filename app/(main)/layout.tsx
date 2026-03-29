@@ -13,9 +13,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <TopNav />
 
       {/* 主要內容區：
-          - md:pt-14 → 桌機版讓出頂部 nav 的高度
-          - 底部留白改由 MobileBottomNav 內的 spacer 處理，
-            這樣在聊天室（/chats/[userId]）時可以連同 spacer 一起隱藏 */}
+        - md:pt-14 → 桌機版讓出頂部 nav 的高度
+        - 底部留白改由 MobileBottomNav 內的 spacer 處理，
+          這樣在聊天室（/chats/[userId]）時可以連同 spacer 一起隱藏 */}
       <NotificationBell />
 
       <main className="md:pt-14">
