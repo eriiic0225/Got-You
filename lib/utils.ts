@@ -5,7 +5,6 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/zh-tw'
-import relativeTime from 'dayjs/plugin/relativeTime'
 import type { Message } from '@/types/chat';
 
 dayjs.locale('zh-tw')
@@ -45,7 +44,7 @@ export function formatChatTime(isoString: string): string {
 
 
   if (isToday){
-    return date.format('A H:mm')
+    return date.format('H:mm')
   }
 
   if (isYesterday){
@@ -53,12 +52,12 @@ export function formatChatTime(isoString: string): string {
   }
 
   // 是否為最近 7 天內 (顯示星期幾)
-  if (date.isAfter(date.subtract(7, 'day')))
+  if (date.isAfter(now.subtract(7, 'day')))
     return date.format('dddd')
 
-  if (date.isAfter(date.subtract(1, 'year')))
+  if (date.isAfter(now.subtract(1, 'year')))
     return date.format('M/D')
-  
+
   return date.format('YYYY/M/D')
 }
 
@@ -80,11 +79,11 @@ export function formatMessageBubbleTime(isoString: string): string {
   }
 
   // 是否為最近 7 天內 (顯示星期幾)
-  if (date.isAfter(date.subtract(7, 'day')))
+  if (date.isAfter(now.subtract(7, 'day')))
     return `${date.format('dddd')} ${date.format('H:mm')}`
 
   // 今年內 - 3/18
-  if (date.isAfter(date.subtract(1, 'year')))
+  if (date.isAfter(now.subtract(1, 'year')))
     return date.format('M/D')
 
   // 一年前 - 2015/3/14

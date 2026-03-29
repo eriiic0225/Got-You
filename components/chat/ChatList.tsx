@@ -144,7 +144,7 @@ export default function ChatList(){
                   <p className="text-xs text-text-secondary truncate">{chat.sender_id === profile?.id && "你："}{chat.last_message}</p>
                 </div>
                 {/* 時間跟未讀 */}
-                <div className="flex flex-col gap-1 items-center shrink-0">
+                <div className="flex flex-col gap-1 items-end shrink-0">
                   <p className="text-xs text-text-secondary">{formatChatTime(chat.created_at)}</p>
                   <div className={cn(
                     "bg-[tomato] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1",
