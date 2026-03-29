@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useExploreStore } from '@/stores/useExploreStore';
 
 // 個人資料頁專用型別：沿用 UserBase（生活照在元件內部 fetch，不透過 prop 傳入）
 export interface UserProfileData extends UserBase {}
@@ -30,6 +31,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
   const router = useRouter()
   const [photos, setPhotos] = useState<string[]>([])
   const logout = useAuthStore(state => state.logout)
+  const resetFilters = useExploreStore(state => state.resetFilters)
 
   // 根據 profile.id 從 user_photos 表撈取生活照 URL
   useEffect(() => {
@@ -46,6 +48,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
   }, [profile.id])
 
   const handleSignOut = async () => {
+    resetFilters()
     await logout()
     router.refresh() // 清除 next 的 client-side router cache
     router.push('/')

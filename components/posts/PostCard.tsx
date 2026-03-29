@@ -5,7 +5,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { LuCalendar, LuMapPin, LuUsers, LuMessageCircle } from 'react-icons/lu'
-import { formatPostTime } from "@/lib/utils"
+import { formatPostTime, formatCreatedAt } from "@/lib/utils"
 import type { PostWithDetails } from "@/types/post"
 
 interface Props {
@@ -38,10 +38,13 @@ function PostCard({ post }: Props){
         {/* ── 上排：運動類型 badge + 發文者資訊 ── */}
         <div className="flex justify-between items-center mb-3">
 
-          {/* 運動類型：icon + 名稱，用主色調的半透明背景做 badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-primary/15 rounded-full">
-            <span>{post.sport.icon}</span>
-            <span className="text-sm font-medium text-primary">{post.sport.name}</span>
+          {/* 運動類型 badge + 發文時間（同排左側） */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-primary/15 rounded-full">
+              <span>{post.sport.icon}</span>
+              <span className="text-sm font-medium text-primary">{post.sport.name}</span>
+            </div>
+            <span className="text-[11px] text-text-secondary/60">{formatCreatedAt(post.created_at)}</span>
           </div>
 
           {/* 發文者：頭貼 + 暱稱（點擊跳個人頁，stopPropagation 避免觸發外層卡片 Link） */}

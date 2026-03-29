@@ -77,8 +77,8 @@ function SignUpPage(){
         {/* Email/Password 表單 */}
         <form onSubmit={handleSubmit(onSubmit)} className="grid max-w-2xs gap-3">
           <div className="">
-            <label htmlFor="email" className="block mb-2 text-left text-sm">Email</label>
-            <input {...register("email")} id="email" type="email" name="email" placeholder="輸入電子郵件地址"
+            <label htmlFor="email" className="block mb-2 text-left text-sm">Email(測試階段信箱無需驗證)</label>
+            <input {...register("email")} id="email" type="email" name="email" placeholder="歡迎隨意註冊試玩"
               className={inputClasses}/>
               {errors.email && (
                 <p className="text-error text-sm mt-1 text-left">{errors.email.message}</p>
@@ -86,7 +86,7 @@ function SignUpPage(){
           </div>
           <div>
             <label htmlFor="password" className="block mb-2 text-left text-sm">密碼</label>
-            <input {...register("password")} id="password" type="password" name="password" placeholder="密碼"
+            <input {...register("password")} id="password" type="password" name="password" placeholder="測試階段密碼任意6字元即可"
               className={inputClasses}/>
               {errors.password && (
                 <p className="text-error text-sm mt-1 text-left">{errors.password.message}</p>

@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase/client"
 import Link from "next/link"
 import PostCard from "@/components/posts/PostCard"
 import PostFilterBar, { type PostFilters } from "@/components/posts/PostFilterBar"
+import SkeletonPostList from "@/components/posts/SkeletonPostCard"
 
 function PostsPage(){
 
@@ -122,14 +123,17 @@ function PostsPage(){
         />
       )}
 
-      {isLoading && <p className="text-text-secondary text-sm">載入中...</p>}
-
-      {/* 揪團卡片列表 */}
-      <div className="space-y-4">
-        {filteredPosts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
+      {/* 載入中：顯示骨架卡；載入後：顯示真實卡片 */}
+      {isLoading
+        ? <SkeletonPostList />
+        : (
+          <div className="space-y-4">
+            {filteredPosts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+        )
+      }
 
       {/* 無結果提示：區分「真的沒資料」和「篩選後無結果」 */}
       {!isLoading && filteredPosts.length === 0 && (

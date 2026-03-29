@@ -9,6 +9,7 @@ import type { PostWithDetails } from "@/types/post"
 import PostDetail from "@/components/posts/PostDetail"
 import ParticipateButton from "@/components/posts/ParticipateButton"
 import CommentSection from "@/components/posts/CommentSection"
+import SkeletonPostDetail from "@/components/posts/SkeletonPostDetail"
 
 
 
@@ -71,8 +72,8 @@ function IndividualPostPage(){
 
   if (isLoading) {
     return (
-      <div className="max-w-[1000px] mx-auto px-2 py-8">
-        <p className="text-text-secondary text-sm">載入中...</p>
+      <div className="max-w-[1000px] mx-auto px-2 pt-3 pb-12">
+        <SkeletonPostDetail />
       </div>
     )
   }

@@ -98,7 +98,22 @@ export default function CommentSection({ postId }: Props) {
       {/* ── 留言列表（無卡片包裝，接續上方的統一卡片） ── */}
       <div className="divide-y divide-border border-t border-border">
         {isLoading ? (
-          <p className="text-text-secondary text-sm px-6 py-4">載入中...</p>
+          // 留言載入中：顯示 3 則骨架留言
+          <div className="animate-pulse">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="px-6 py-4 flex gap-3">
+                <div className="size-8 rounded-full bg-bg-tertiary shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-16 bg-bg-tertiary rounded" />
+                    <div className="h-3 w-20 bg-bg-tertiary rounded" />
+                  </div>
+                  <div className="h-3 w-full bg-bg-tertiary rounded" />
+                  <div className="h-3 w-3/4 bg-bg-tertiary rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : comments.length === 0 ? (
           <p className="text-center text-text-secondary text-sm px-6 py-8">
             還沒有留言，快來說點什麼

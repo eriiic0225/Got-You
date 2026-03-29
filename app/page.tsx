@@ -131,25 +131,37 @@ export default function Home(){
           {/* 左側文案 */}
           <div className="space-y-6">
             
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/15 border border-primary/30 rounded-full text-primary text-sm font-semibold">
+            <div 
+              className="animate-fade-in-up inline-flex items-center gap-2 px-4 py-1.5 bg-primary/15 border border-primary/30 rounded-full text-primary text-sm font-semibold"
+              style={{ animationDelay: '0ms' }}
+            >
               <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" aria-hidden />
               最簡單直接的運動揪團平台
             </div>
             {/* 主標題 */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight">
+            <h1 
+              className="animate-fade-in-up text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight"
+              style={{ animationDelay: '100ms' }}
+            >
               找到你的
               <br />
               <span className="text-primary">運動夥伴</span>
             </h1>
 
             {/* 副標 */}
-            <p className="text-text-secondary text-lg md:text-xl leading-relaxed max-w-md">
+            <p 
+              className="animate-fade-in-up text-text-secondary text-lg md:text-xl leading-relaxed max-w-md"
+              style={{ animationDelay: '200ms' }}
+            >
               不管是羽球、跑步還是健身——
               Got You 幫你找到附近志同道合的夥伴，一起動起來。
             </p>
 
             {/* CTA 按鈕群 */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div 
+              className="flex flex-col sm:flex-row gap-3 pt-2 animate-fade-in-up"
+              style={{ animationDelay: '300ms' }}
+            >
               {/* 主要 CTA */}
               <Link
                 href="/signup"
@@ -170,7 +182,10 @@ export default function Home(){
             </div>
           </div>
 
-          <div className="relative hidden md:block h-[460px]">
+          <div 
+            className="relative hidden md:block h-[460px] animate-fade-in-up"
+            style={{ animationDelay: '400ms' }}
+          >
             {/* 浮動卡片 */}
             {MOCK_POSTS.map((post) => (
               <div
