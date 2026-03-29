@@ -77,21 +77,23 @@ function SignUpPage(){
         {/* Email/Password 表單 */}
         <form onSubmit={handleSubmit(onSubmit)} className="grid max-w-2xs gap-3">
           <div className="">
-            <label htmlFor="email" className="block mb-2 text-left text-sm">Email(測試階段信箱無需驗證)</label>
-            <input {...register("email")} id="email" type="email" name="email" placeholder="歡迎隨意註冊試玩"
+            <label htmlFor="email" className="block mb-2 text-left text-sm">Email<br/>(測試階段信箱無需驗證)</label>
+            <input {...register("email")} id="email" type="email" name="email" placeholder="仿email格式隨意輸入即可" // 原為 "輸入電子郵件地址"
               className={inputClasses}/>
               {errors.email && (
                 <p className="text-error text-sm mt-1 text-left">{errors.email.message}</p>
               )}
           </div>
           <div>
-            <label htmlFor="password" className="block mb-2 text-left text-sm">密碼</label>
-            <input {...register("password")} id="password" type="password" name="password" placeholder="測試階段密碼任意6字元即可"
+            <label htmlFor="password" className="block mb-2 text-left text-sm">密碼<br/>(測試階段密碼任意6字元即可)</label>
+            <input {...register("password")} id="password" type="password" name="password" placeholder="密碼"
               className={inputClasses}/>
               {errors.password && (
                 <p className="text-error text-sm mt-1 text-left">{errors.password.message}</p>
               )}
           </div>
+          {/* 宣傳訊息 */}
+          <p>歡迎大家註冊試玩！</p>
           <div>
             <button disabled={isSubmitting} type="submit" className="inline-block mt-2.5 px-6 py-2 bg-primary text-bg-primary font-semibold rounded-lg hover:bg-primary-hover transition hover:animate-pulse cursor-pointer">
               {isSubmitting ? "註冊中..." : "註冊"}
