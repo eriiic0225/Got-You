@@ -34,7 +34,7 @@ export default function FadeInOnScroll({ children, delay = 0 }: Props) {
       ref={ref}
       // 初始狀態：透明 + 向下偏移
       // transition-all 讓 class 切換時有動畫
-      className="opacity-0 translate-y-6 transition-all duration-700"
+      className="opacity-0 translate-y-6 transition-all duration-700 h-full"
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}

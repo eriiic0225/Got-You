@@ -229,7 +229,7 @@ export default function Home(){
             <FadeInOnScroll key={i} delay={i*150}>
               <div
                 key={feature.title}
-                className={`relative p-6 bg-bg-secondary border border-border rounded-2xl ${feature.borderHover} transition-all duration-300 group overflow-hidden`}
+                className={`relative p-6 bg-bg-secondary border border-border rounded-2xl ${feature.borderHover} transition-all duration-300 group overflow-hidden h-full`}
               >
                 {/* 懸停時的漸層背景 */}
                 <div
