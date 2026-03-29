@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { useUserStore } from '@/stores/useUserStore'
 import { FaArrowRightToBracket } from "react-icons/fa6";
+import { useAuthStore } from '@/stores/useAuthStore'
 
 export default function LandingNav(){
   // scrolled：記錄使用者是否已向下滾動
   const [scrolled, setScrolled] = useState(false)
-  const profile = useUserStore(state => state.profile)
+  const user = useAuthStore(state => state.user)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +45,7 @@ export default function LandingNav(){
       </div>
 
       {/* 右側登入按鈕 */}
-      { !profile ? (
+      { !user ? (
         <Link
           href="/login"
           className="px-5 py-2 border border-border text-text-secondary hover:text-text-primary hover:border-primary/50 rounded-lg text-sm font-medium transition-all duration-200"
@@ -53,7 +53,7 @@ export default function LandingNav(){
           登入
         </Link>
       ) : (
-          <Link
+        <Link
           href="/explore"
           className="flex items-center gap-1.5 px-5 py-2 border border-border text-text-secondary hover:text-text-primary hover:border-primary/50 rounded-lg text-sm font-medium transition-all duration-200"
         >
