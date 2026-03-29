@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase/client"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -27,6 +28,15 @@ function LoginPage(){
   const router = useRouter()
 
   const setUser = useAuthStore((state)=> state.setUser)
+
+  // 已登入用戶不應看到登入頁（proxy 負責 hard refresh，這裡負責 client-side 導航的情況）
+  // Next.js router cache 可能讓 Link 點擊繞過 proxy，所以這裡做第二道防線
+  const user = useAuthStore((state) => state.user)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  useEffect(() => {
+    if (!isLoading && user) router.replace('/explore')
+  }, [user, isLoading, router])
+  if (isLoading || user) return null  // 確認中或已登入時不渲染表單，避免畫面閃爍
 
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema)

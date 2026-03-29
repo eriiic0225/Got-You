@@ -2,8 +2,10 @@
 
 import GoogleButton from "@/components/ui/GoogleButton"
 import { supabase } from "@/lib/supabase/client"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
+import { useEffect } from "react"
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -23,6 +25,15 @@ const inputClasses = "bg-bg-tertiary inline-block w-full rounded-md px-3 py-1.5 
 function SignUpPage(){
 
   const router = useRouter()
+
+  // 已登入用戶不應看到註冊頁（proxy 負責 hard refresh，這裡負責 client-side 導航的情況）
+  const user = useAuthStore((state) => state.user)
+  const isLoading = useAuthStore((state) => state.isLoading)
+  useEffect(() => {
+    if (!isLoading && user) router.replace('/explore')
+  }, [user, isLoading, router])
+  if (isLoading || user) return null  // 確認中或已登入時不渲染表單，避免畫面閃爍
+
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<SignUpInput>({
     resolver: zodResolver(SignUpSchema)
   })
