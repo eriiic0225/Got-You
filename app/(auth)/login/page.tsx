@@ -36,11 +36,14 @@ function LoginPage(){
   useEffect(() => {
     if (!isLoading && user) router.replace('/explore')
   }, [user, isLoading, router])
-  if (isLoading || user) return null  // 確認中或已登入時不渲染表單，避免畫面閃爍
 
+  // ⚠️ useForm 必須在 early return 之前呼叫，否則違反 Rules of Hooks
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema)
   })
+
+  // 確認中或已登入時不渲染表單，避免畫面閃爍（所有 hooks 已在上方呼叫完畢）
+  if (isLoading || user) return null
 
 
   const onSubmit: SubmitHandler<LoginInput> = async (payload) => {

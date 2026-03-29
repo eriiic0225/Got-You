@@ -28,6 +28,12 @@ export default function ChatWindow({ partnerId }: Props){
 
   // 1. 查詢對方的基本資料
   useEffect(() => {
+    // partnerId 是 prop，同步就能拿到，不需要等 fetchPartner 回來才設
+    // 若等 async query 完成才 setCurrentConversationId，會和 markAsRead（Effect 3）產生 race condition：
+    // markAsRead 的 UPDATE 觸發 Realtime → fetchTotalUnread 執行時 currentConversationId 還是 ""
+    // → totalUnread 沒有正確排除當前對話 → TopNav badge 不歸零
+    setCurrentConversationId(partnerId)
+
     async function fetchPartner() {
       const { data, error } = await supabase
         .from('users')
@@ -40,7 +46,6 @@ export default function ChatWindow({ partnerId }: Props){
         return
       }
 
-      setCurrentConversationId(data.id)
       setPartner(data as ConversationPartner)
     }
 
