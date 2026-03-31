@@ -159,7 +159,7 @@ export default function ExplorePage() {
               <p className='text-xs'>試著調整篩選條件</p>
             </div>
           ) : (
-            // 正常顯示卡片
+            // !正常顯示卡片 -> 渲染 displayUsers
             <section className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-3 mt-4'>
               {displayUsers.map((u) => (
                 <UserCard key={u.id} profile={u}/>
