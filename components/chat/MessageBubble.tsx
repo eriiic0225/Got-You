@@ -20,7 +20,7 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
     // 最外層：控制整列的水平對齊
     // isOwn → flex-row-reverse 讓氣泡靠右；對方 → flex-row 靠左
     <div className={cn(
-      "flex items-end gap-2 px-3 mb-[1px]",
+      "flex items-end gap-2 px-3 mb-[2px]",
       isOwn ? "flex-row-reverse" : "flex-row",
       hasExtraMargin && "mb-1.5" // 超過五分鐘就加間距（在上層計算好的）
     )}>

@@ -204,8 +204,8 @@ export default function ChatWindow({ partnerId }: Props){
                 const isTimeExceeded = isTimeDiffExceeded(msg, nextMsg)
                 const isDifferentSender = nextMsg?.sender_id !== msg.sender_id;
                 const showAvatar = !isOwn && (isDifferentSender || isTimeExceeded)
-                // 有下一則訊息 && 是同一個人 && 時間超過了 -> 加大間距
-                const hasExtraMargin = nextMsg && !isDifferentSender && isTimeExceeded
+                // 有下一則訊息 && 是同一個人 && 時間超過了 或 是不同人傳的 -> 加大間距
+                const hasExtraMargin = (nextMsg && !isDifferentSender && isTimeExceeded) || (isDifferentSender)
                 return (
                   <MessageBubble
                     key={msg.id}

@@ -154,7 +154,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }: Pro
 
           {/* textarea：支援 Ctrl+V 貼圖、Backspace 刪圖、Enter 送出 */}
           <textarea
-            className="w-full resize-none bg-transparent px-3 py-2 text-sm focus:outline-none"
+            className="w-full resize-none bg-transparent px-3 py-2 text-base md:text-sm focus:outline-none"
             rows={1} value={content} placeholder="輸入訊息..."
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
