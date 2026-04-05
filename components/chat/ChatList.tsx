@@ -56,7 +56,6 @@ export default function ChatList(){
 
       if (data){
         // 聚合邏輯
-        // console.log(data)
         const grouped = data.reduce((acc, msg)=>{
           // Step 1: 除了本人以外，對話的另一方是誰
           const partnerId = msg.sender_id === myId ? msg.receiver_id : msg.sender_id
@@ -87,7 +86,7 @@ export default function ChatList(){
         }, {} as Record<string, Chat>)
         // 最後轉成陣列
         const chatList = Object.values(grouped)
-        console.log("聊天室列表資訊", chatList)
+        // console.log("聊天室列表資訊", chatList)
         setChats(chatList as Chat[])
       }
       setIsLoading(false)

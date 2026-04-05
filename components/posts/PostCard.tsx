@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { LuCalendar, LuMapPin, LuUsers, LuMessageCircle } from 'react-icons/lu'
 import { formatPostTime, formatCreatedAt } from "@/lib/utils"
 import type { PostWithDetails } from "@/types/post"
+import ParticipantsList from './ParticipantsList'
 
 interface Props {
   post: PostWithDetails
@@ -26,11 +27,11 @@ function PostCard({ post }: Props){
     <Link href={`/posts/${post.id}`} className="block">
     <article
       className={`bg-bg-secondary border border-border rounded-lg
-      flex overflow-hidden
+      flex
       hover:border-primary/50 hover:bg-bg-tertiary transition-colors cursor-pointer`}>
 
       {/* 左側裝飾條 */}
-      <div className='bg-primary w-1 hover:bg-primary-hover'/>
+      <div className='bg-primary w-1 rounded-l-lg hover:bg-primary-hover shrink-0'/>
 
       {/* 內容區 */}
       <div className='p-4 grow'>
@@ -83,7 +84,7 @@ function PostCard({ post }: Props){
           </div>
         )}
 
-        {/* ── 活動說明（最多顯示兩行，超出截斷）── */}
+        {/* ── 活動說明 ── */}
         <h3
           className='font-semibold'
         >
@@ -95,17 +96,27 @@ function PostCard({ post }: Props){
           {post.description}
         </p>
 
-        {/* ── 底部：參與人數 + 留言數，用上邊框隔開 ── */}
+        {/* 參與人數 + 留言數 */}
         <div className="flex justify-between items-center pt-3 border-t border-border">
 
-          {/* 參與人數：目前人數用強調色顯示，上限用次要色 */}
-          <div className="flex items-center gap-1.5 text-sm">
-            <LuUsers className="size-3.5 shrink-0" strokeWidth={1.5} />
-            <span className="text-accent font-medium">{post.participants_count}</span>
-            {post.max_participants && post.max_participants > 0 && (
-              <span className="text-text-secondary">/ {post.max_participants}</span>
-            )}
-            <span className="text-text-secondary ml-0.5">人參加</span>
+          {/* 參與人數：hover 時顯示參加者列表*/}
+          <div className="relative group/participants">
+
+            {/* 觸發區：人數顯示 */}
+            <div className="flex items-center gap-1.5 text-sm">
+              <LuUsers className="size-3.5 shrink-0" strokeWidth={1.5} />
+              <span className="text-accent font-medium">{post.participants_count}</span>
+              {post.max_participants && post.max_participants > 0 && (
+                <span className="text-text-secondary">/ {post.max_participants}</span>
+              )}
+              <span className="text-text-secondary ml-0.5">人參加</span>
+            </div>
+
+            {/* hover 才出現的參加者列表 */}
+            <div className="absolute top-full left-0 mb-2 z-50 min-w-40 hidden group-hover/participants:block">
+              <ParticipantsList postId={post.id} />
+            </div>
+
           </div>
 
           {/* 留言數 */}

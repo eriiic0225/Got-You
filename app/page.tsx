@@ -5,6 +5,7 @@ import { FiArrowRight } from "react-icons/fi"
 import LandingNav from "@/components/landing/LandingNav";
 import SportCarousel from "@/components/landing/SportCarousel";
 import FadeInOnScroll from "@/components/landing/FadeInOnScroll";
+import ScrollDownIndicator from "@/components/landing/ScrollDownIndicator";
 
 
 // Hero 右側裝飾用的假揪團卡資料
@@ -205,6 +206,13 @@ export default function Home(){
             ))}
           </div>
 
+        </div>
+
+        {/* 滑動指示器 */}
+        <div 
+          className="absolute bottom-4 left-[50%] translate-x-[50%]"
+        >
+          <ScrollDownIndicator />
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, Fragment } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { useUserStore } from "@/stores/useUserStore"
 import type { ConversationPartner, Message } from "@/types/chat"
@@ -25,6 +25,8 @@ export default function ChatWindow({ partnerId }: Props){
   const [partner, setPartner] = useState<ConversationPartner | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const firstUnreadRef = useRef<HTMLDivElement>(null)   // 未讀提示的錨點
+  const hasInitialScrolled = useRef(false)               // 是否已完成初次捲動
 
   // 1. 查詢對方的基本資料
   useEffect(() => {
@@ -55,11 +57,14 @@ export default function ChatWindow({ partnerId }: Props){
   },[partnerId, setCurrentConversationId])
 
 
-  // 2. 查詢兩人之間的訊息記錄
+  // 2. 查詢兩人之間的訊息記錄，完成後再標記已讀
+  // 注意：markAsRead 必須在 setMessages 之後執行，否則會有 race condition：
+  // 若 UPDATE 先 commit，SELECT 讀到的 is_read 全為 true，firstUnreadIndex = -1，無法捲到未讀位置
   useEffect(() => {
     if (!profile?.id) return
 
     async function fetchMessages(){
+      hasInitialScrolled.current = false
       setIsLoading(true)
       const { data, error } = await supabase
         .from('messages')
@@ -76,29 +81,21 @@ export default function ChatWindow({ partnerId }: Props){
         return
       }
 
+      // 先更新 local state（保留原始 is_read，firstUnreadIndex 才能正確計算）
       setMessages(data as Message[])
       setIsLoading(false)
-    }
-    fetchMessages()
 
-  }, [profile, partnerId])
-
-  // 3. 進入聊天室時，將對方傳來的未讀訊息標記為已讀
-  // 觸發 UPDATE -> useChatStore 的 Realtime 訂閱會自動更新 totalUnread
-  useEffect(() => {
-    if (!profile?.id) return
-
-    async function markAsRead(){
+      // 再標記已讀（觸發 UPDATE → useChatStore Realtime 自動更新 totalUnread）
       await supabase
         .from('messages')
-        .update({is_read: true})
+        .update({ is_read: true })
         .eq('receiver_id', profile!.id)
         .eq('sender_id', partnerId)
         .eq('is_read', false)
     }
-    markAsRead()
+    fetchMessages()
 
-  },[profile, partnerId])
+  }, [profile, partnerId])
 
   // 4. Realtime：訂閱對方傳來的新訊息
   useEffect(() => {
@@ -133,11 +130,28 @@ export default function ChatWindow({ partnerId }: Props){
 
   }, [profile, partnerId])
 
-  // messages 更新時捲到底
+
+  // 捲動到最早一次未讀 ＆ messages 更新時捲到底
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (!messages.length) return
+
+    if (!hasInitialScrolled.current){
+      hasInitialScrolled.current = true
+      // 有未讀 → 捲到橫槓位置；沒有 → 捲到底
+      const target = firstUnreadRef.current ?? messagesEndRef.current
+      target?.scrollIntoView({ behavior: 'smooth' })
+    }else {
+      // 後續的新訊息 → 永遠捲到底
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [messages])
 
+  
+  const firstUnreadIndex = messages.findIndex(
+    msg => msg.receiver_id === profile?.id && !(msg.is_read)
+  )
+  
+  
   // 用來樂觀更新自己送出的訊息（加上 Realtime 監聽不到自己傳的訊息）
   const handleMessageSent = (newMessage: Message) => {
     setMessages(prev => [...prev, newMessage])
@@ -199,6 +213,7 @@ export default function ChatWindow({ partnerId }: Props){
           ) : (
             <>
               {messages.map((msg, index)=>{
+                const isFirstUnread = index === firstUnreadIndex // 第一則未讀的狀態
                 const isOwn = msg.sender_id === profile!.id
                 const nextMsg = messages[index + 1]
                 const isTimeExceeded = isTimeDiffExceeded(msg, nextMsg)
@@ -207,13 +222,23 @@ export default function ChatWindow({ partnerId }: Props){
                 // 有下一則訊息 && 是同一個人 && 時間超過了 或 是不同人傳的 -> 加大間距
                 const hasExtraMargin = (nextMsg && !isDifferentSender && isTimeExceeded) || (isDifferentSender)
                 return (
-                  <MessageBubble
-                    key={msg.id}
-                    message={msg} isOwn={isOwn}
-                    showAvatar={showAvatar}
-                    hasExtraMargin={hasExtraMargin}
-                    partnerAvatar={partner?.avatar_url ?? null}
-                  />
+                  <Fragment key={msg.id}>
+                    {isFirstUnread && (
+                      <div ref={firstUnreadRef} className="flex items-center gap-3 px-4 py-3">
+                        <div className="flex-1 h-px bg-primary/30" />
+                        <span className="text-xs text-primary/60 font-medium shrink-0">
+                          以下為未讀訊息
+                        </span>
+                        <div className="flex-1 h-px bg-primary/30" />
+                      </div>
+                    )}
+                    <MessageBubble
+                      message={msg} isOwn={isOwn}
+                      showAvatar={showAvatar}
+                      hasExtraMargin={hasExtraMargin}
+                      partnerAvatar={partner?.avatar_url ?? null}
+                    />
+                  </Fragment>
                 )
               })}
               <div ref={messagesEndRef} />  {/* 捲動錨點 */}

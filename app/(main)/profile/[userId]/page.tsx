@@ -20,7 +20,7 @@ function UserProfilePage(){
     if (!profile || !userId) return
 
     if (profile.id === userId){
-      router.push('/profile/me')
+      router.replace('/profile/me') // 把 push 改 replace，讓瀏覽器不會留下紀錄
     }
 
     async function fetchUserProfile(){

@@ -8,6 +8,8 @@ import { LuUsers, LuMessageCircle } from 'react-icons/lu'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase/client'
 import { useUserStore } from '@/stores/useUserStore'
+import * as Popover from "@radix-ui/react-popover"
+import ParticipantsList from './ParticipantsList'
 
 interface Props {
   postId: string
@@ -153,13 +155,24 @@ export default function ParticipateButton({ postId, maxParticipants, initialCoun
         </div>
 
         {/* 參加人數 */}
-        <div className="flex items-center gap-1.5">
-          <LuUsers className="size-4 shrink-0" strokeWidth={1.5} />
-          <span className="text-accent font-medium">{count}</span>
-          {maxParticipants && (
-            <span>/ {maxParticipants}</span>
-          )}
-        </div>
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <div className="flex items-center gap-1.5">
+              <LuUsers className="size-4 shrink-0" strokeWidth={1.5} />
+              <span className="text-accent font-medium">{count}</span>
+              {maxParticipants && (
+                <span>/ {maxParticipants}</span>
+              )}
+            </div>
+          </Popover.Trigger>
+
+          <Popover.Portal>
+            <Popover.Content sideOffset={5}>
+              <ParticipantsList postId={postId} />
+            </Popover.Content>
+          </Popover.Portal>
+
+        </Popover.Root>
 
       </div>
 
