@@ -3,9 +3,8 @@
 // 聊天室中的單則訊息氣泡
 // 根據 isOwn 決定左右對齊與顏色；showAvatar 控制頭像是否顯示（連續訊息不重複顯示）
 
-import { cn, formatMessageBubbleTime } from "@/lib/utils"
+import { cn, formatMessageBubbleTime, urlExtract } from "@/lib/utils"
 import type { Message } from "@/types/chat"
-import dayjs from "dayjs"
 
 interface Props {
   message: Message              // 訊息資料（對應 messages 資料表）
@@ -16,6 +15,45 @@ interface Props {
 }
 
 export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMargin, partnerAvatar }: Props) {
+
+  // 加上提取網址連結並轉換成 <a> 標籤
+  function renderContent(content: string){
+    const links = urlExtract(content)
+
+    if (!links.length) return content
+
+    const parts: React.ReactNode[] = []
+    let lastIndex = 0
+
+    links.forEach((link, idx) => {
+      // URL 前的純文字
+      if (link.index > lastIndex){
+        parts.push(content.slice(lastIndex, link.index))
+      }
+      // URL 轉 <a> 標籤
+      parts.push(
+        <a 
+          key={idx}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline opacity-80 hover:opacity-100 break-all"
+          onClick={e => e.stopPropagation()}
+        >
+          {link.text}
+        </a>
+      )
+      lastIndex = link.lastIndex
+    })
+
+    // URL 後的剩餘文字
+    if (lastIndex < content.length){
+      parts.push(content.slice(lastIndex))
+    }
+    return parts
+  }
+
+
   return (
     // 最外層：控制整列的水平對齊
     // isOwn → flex-row-reverse 讓氣泡靠右；對方 → flex-row 靠左
@@ -65,7 +103,7 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
         {/* 文字訊息：whitespace-pre-wrap 保留換行；break-words 防止長字串溢出 */}
         {message.content && (
           <p className="whitespace-pre-wrap break-words leading-relaxed">
-            {message.content}
+            {renderContent(message.content)}
           </p>
         )}
 

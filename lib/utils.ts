@@ -6,6 +6,8 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import 'dayjs/locale/zh-tw'
 import type { Message } from '@/types/chat';
+import LinkifyIt from 'linkify-it'
+import tlds from 'tlds';
 
 dayjs.locale('zh-tw')
 dayjs.extend(isSameOrBefore)
@@ -128,4 +130,20 @@ export function formatPostTime(eventDate: string, eventTime: string | null): str
 // 發文時間（created_at）格式：2026/3/24 18:45
 export function formatCreatedAt(isoString: string): string {
   return dayjs.utc(isoString).tz().format('YYYY/M/D HH:mm')
+}
+
+const linkify = new LinkifyIt()
+  .tlds(tlds)                     // Reload with full tlds list
+  .tlds('onion', true)            // Add unofficial `.onion` domain
+  .add('git:', 'http:')           // Add `git:` protocol as "alias"
+  .add('ftp:', null)              // Disable `ftp:` protocol
+  .set({ fuzzyIP: true });        // Enable IPs in fuzzy links (without schema)
+
+// 判斷字串是否含有網址並提取網址
+export function urlExtract(content: string){
+  if (!linkify.test(content)) return []
+
+  const match = linkify.match(content)
+  return match?.map((u) => ({ text: u.text, url: u.url, index: u.index, lastIndex: u.lastIndex })) ?? []
+
 }

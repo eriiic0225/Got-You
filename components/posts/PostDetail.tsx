@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import { LuCalendar, LuMapPin } from 'react-icons/lu'
-import { formatPostTime, formatCreatedAt } from '@/lib/utils'
+import { formatPostTime, formatCreatedAt, urlExtract } from '@/lib/utils'
 import type { PostWithDetails } from '@/types/post'
 
 interface Props {
@@ -15,6 +15,43 @@ export default function PostDetail({ post }: Props) {
   const locationText = [post.location_area, post.location_detail]
     .filter(Boolean)
     .join(' · ')
+
+  // 加上提取網址連結並轉換成 <a> 標籤
+  function renderContent(content: string){
+    const links = urlExtract(content)
+
+    if (!links.length) return content
+
+    const parts: React.ReactNode[] = []
+    let lastIndex = 0
+
+    links.forEach((link, idx) => {
+      // URL 前的純文字
+      if (link.index > lastIndex){
+        parts.push(content.slice(lastIndex, link.index))
+      }
+      // URL 轉 <a> 標籤
+      parts.push(
+        <a 
+          key={idx}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline opacity-80 hover:opacity-100 break-all"
+          onClick={e => e.stopPropagation()}
+        >
+          {link.text}
+        </a>
+      )
+      lastIndex = link.lastIndex
+    })
+
+    // URL 後的剩餘文字
+    if (lastIndex < content.length){
+      parts.push(content.slice(lastIndex))
+    }
+    return parts
+  }
 
   return (
     <div className="p-6">
@@ -78,7 +115,7 @@ export default function PostDetail({ post }: Props) {
 
         {/* ── 活動說明（保留換行）── */}
         <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
-          {post.description}
+          {renderContent(post.description)}
         </p>
 
     </div>
