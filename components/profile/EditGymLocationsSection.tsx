@@ -8,6 +8,7 @@ import PlacesAutocomplete from "../shared/PlacesAutocomplete"
 import { IoLocationSharp } from "react-icons/io5";
 import { MdAddLocationAlt } from "react-icons/md";
 import { MdClose } from 'react-icons/md';
+import type { SelectedPlace } from "@/types/place";
 
 interface EditGymLocationsSectionProps {
   profile: UserProfile
@@ -26,20 +27,22 @@ export default function EditGymLocationsSection({profile}:EditGymLocationsSectio
   const [selectedPlaces, setSelectedPlaces] = useState<Place[]>(profile.gym_locations!)
   const [error, setError] = useState("")
 
-  const onPlaceSelect = async(place: google.maps.places.Place | null) => {
-    if (!place) return
+  // PlacesAutocomplete 已在內部處理快取查詢與 fetchFields，
+  // 這裡收到的 place 無論來自快取或 Google API，都是完整的 SelectedPlace 資料。
+  const onPlaceSelect = async(place: SelectedPlace) => {
     if (selectedPlaces.length >= MAX_LOCATIONS){
       setError("最多只能選取 3 個常去地點！請刪除部分後重試")
       setTimeout(() => setError(""), 5000)
       return
     }
 
+    // gym_locations upsert：快取命中時為 no-op（資料已存在），未命中時寫入新地點
     const newLocation = {
       google_place_id: place.id,
       name: place.displayName,
       address: place.formattedAddress,
-      latitude: place.location?.lat() ?? null,
-      longitude: place.location?.lng() ?? null
+      latitude: place.latitude,
+      longitude: place.longitude,
     }
     const { error: newLocationError } = await supabase
       .from('gym_locations')
@@ -56,7 +59,7 @@ export default function EditGymLocationsSection({profile}:EditGymLocationsSectio
     }
 
     // DB 成功後才更新 UI state（避免失敗時要回滾）
-    setSelectedPlaces(prev => [...prev, { place_id: place.id, name: place.displayName! }])
+    setSelectedPlaces(prev => [...prev, { place_id: place.id, name: place.displayName }])
     fetchUser()
   }
 

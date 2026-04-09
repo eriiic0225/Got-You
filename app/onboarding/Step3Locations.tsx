@@ -8,10 +8,13 @@ import { useEffect, useState } from "react";
 import { MdOutlineMyLocation } from "react-icons/md";
 import { IoLocationSharp } from "react-icons/io5";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import type { SelectedPlace } from "@/types/place";
 
 interface Step3LocationsProps {
-  selectedPlaces: google.maps.places.Place[]
-  setSelectedPlaces: (places: google.maps.places.Place[]) => void
+  // SelectedPlace 是與 Google SDK 解耦的精簡型別，
+  // 父層（onboarding/page.tsx）只需要 place.id 來寫入 user_gym_locations
+  selectedPlaces: SelectedPlace[]
+  setSelectedPlaces: (places: SelectedPlace[]) => void
   completeOnboarding: () => Promise<void>
   isSubmitting: boolean
   submitError: string
@@ -28,7 +31,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
   // 這個 hook 是 @vis.gl/react-google-maps 提供的，需要在 APIProvider 內才能使用
   const placesLib = useMapsLibrary('places')
 
-  // nearbyPlaces：目前顯示的附近地點推薦清單（IP 或 GPS 定位後取得）
+  // nearbyPlaces：從 Google Places API searchNearby 取得，保留原始型別以存取 .location 等方法
   const [nearbyPlaces, setNearbyPlaces] = useState<google.maps.places.Place[]>([])
   // isLoadingNearby：正在搜尋附近地點中（顯示 loading spinner）
   const [isLoadingNearby, setIsLoadingNearby] = useState(false)
@@ -120,25 +123,37 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
     )
   }
 
-  const onPlaceSelect = async(place: google.maps.places.Place | null)=>{
-    if(place){
-      if(selectedPlaces.length < 3 ){
-        setSelectedPlaces([place, ...selectedPlaces])
-        const newLocation = {
-          google_place_id: place.id,
-          name: place.displayName,
-          address: place.formattedAddress,
-          latitude: place.location?.lat() ?? null,
-          longitude: place.location?.lng() ?? null
-        }
-        const { error } = await supabase
-          .from('gym_locations')
-          .upsert(newLocation)
-      }else{
-        setPlaceError("最多只能選取 3 個常去地點！")
-        setTimeout(() => setPlaceError(""), 5000)
+  // PlacesAutocomplete 呼叫此函式時，place 已是快取或 fetchFields 處理後的完整資料。
+  // 附近地點按鈕（handleNearbyPlaceSelect）也會透過此函式新增，先轉換成 SelectedPlace 格式。
+  const onPlaceSelect = async(place: SelectedPlace)=>{
+    if(selectedPlaces.length < 3 ){
+      setSelectedPlaces([place, ...selectedPlaces])
+      // gym_locations 寫入：確保地點資料存在於資料庫
+      // 快取命中時為 no-op，未命中時由此寫入新地點
+      const newLocation = {
+        google_place_id: place.id,
+        name: place.displayName,
+        address: place.formattedAddress,
+        latitude: place.latitude,
+        longitude: place.longitude,
       }
+      await supabase.from('gym_locations').upsert(newLocation)
+    }else{
+      setPlaceError("最多只能選取 3 個常去地點！")
+      setTimeout(() => setPlaceError(""), 5000)
     }
+  }
+
+  // 附近地點推薦列表的點擊處理：
+  // nearbyPlaces 是 google.maps.places.Place，需轉換成 SelectedPlace 才能傳給 onPlaceSelect
+  const handleNearbyPlaceSelect = (nearbyPlace: google.maps.places.Place) => {
+    onPlaceSelect({
+      id: nearbyPlace.id,
+      displayName: nearbyPlace.displayName ?? '',
+      formattedAddress: nearbyPlace.formattedAddress ?? null,
+      latitude: nearbyPlace.location?.lat() ?? null,
+      longitude: nearbyPlace.location?.lng() ?? null,
+    })
   }
 
   const deletLocation = (id:string)=>{
@@ -193,7 +208,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
                 <li key={place.id}>
                   <button
                     type="button"
-                    onClick={() => onPlaceSelect(place)}
+                    onClick={() => handleNearbyPlaceSelect(place)}
                     className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl border border-border hover:bg-bg-tertiary hover:border-primary transition"
                   >
                     {/* <IoLocationSharp size={18} className="shrink-0 text-primary ml-1" /> */}

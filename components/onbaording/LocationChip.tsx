@@ -1,8 +1,9 @@
 import { IoClose } from "react-icons/io5"
+import type { SelectedPlace } from "@/types/place"
 
 interface LocationChipProps{
   onDelete: (id: string) => void
-  place: google.maps.places.Place
+  place: SelectedPlace
 }
 
 function LocationChip({onDelete, place}: LocationChipProps){

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from 'next/navigation'
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { useUserStore } from "@/stores/useUserStore";
+import type { SelectedPlace } from "@/types/place";
 
 // const fieldTitleClassese = ""
 // const inputClassese = ""
@@ -44,7 +45,7 @@ function OnBoarding(){
     bio: ""
   })
   const [selectedSports, setSelectedSports] = useState<string[]>([])
-  const [selectedPlaces, setSelectedPlaces] = useState<google.maps.places.Place[]>([])
+  const [selectedPlaces, setSelectedPlaces] = useState<SelectedPlace[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
 

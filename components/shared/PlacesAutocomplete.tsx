@@ -5,11 +5,14 @@ import { useState } from "react"
 // useCallback 已移除：這個專案有裝 React Compiler，它會自動處理 memoization，
 // 手動寫 useCallback 反而會和 compiler 的分析衝突，造成警告。
 import { IoLocationSharp } from "react-icons/io5";
+import { supabase } from "@/lib/supabase/client";
+import type { SelectedPlace } from "@/types/place";
 
 
 interface Props {
-    onPlaceSelect: (place: google.maps.places.Place | null) => void
-  }
+  // 使用者選取地點後的 callback，回傳 SelectedPlace（與 Google SDK 型別解耦）
+  onPlaceSelect: (place: SelectedPlace) => void
+}
 
 function PlacesAutocomplete({onPlaceSelect}: Props){
   const places = useMapsLibrary('places')
@@ -28,20 +31,49 @@ function PlacesAutocomplete({onPlaceSelect}: Props){
     if (!places) return;
     if (!suggestion.placePrediction) return;
 
-    // placePrediction.toPlace() 把建議轉成 Place 物件，
-    // 但此時 Place 只有基本資訊，還沒有座標、viewport 等詳細資料。
+    // placePrediction.toPlace() 把建議轉成 Place 物件。
+    // 此時 place.id（Google Place ID）已可用，但 displayName、location 等詳細欄位尚未載入。
     const place = suggestion.placePrediction.toPlace();
+    const placeId = place.id;
 
-    // fetchFields 向 API 要求指定欄位的詳細資料
+    setInputValue('');
+    // session token 在使用者做出選擇後就要重置，
+    // 確保下一次搜尋開啟新的計費 session
+    resetSession();
+
+    // ── 步驟 1：查詢本地快取（Supabase gym_locations）────────────────────────
+    // Google Places API 的 fetchFields 是付費呼叫，
+    // 若此地點已被其他使用者儲存過，直接使用資料庫快取，避免重複計費。
+    const { data: cached } = await supabase
+      .from('gym_locations')
+      .select('google_place_id, name, address, latitude, longitude')
+      .eq('google_place_id', placeId)
+      .maybeSingle()
+
+    if (cached) {
+      // 快取命中：直接回傳資料庫內的地點資料，不呼叫 Google Places API
+      onPlaceSelect({
+        id: cached.google_place_id,
+        displayName: cached.name,
+        formattedAddress: cached.address,
+        latitude: cached.latitude,
+        longitude: cached.longitude,
+      });
+      return;
+    }
+
+    // ── 步驟 2：快取未命中，才向 Google Places API 要求詳細欄位 ──────────────
     await place.fetchFields({
       fields: ['displayName', 'formattedAddress', 'location']
     });
 
-    setInputValue('');
-    // fetchFields 之後 session token 會失效，必須重置，
-    // 確保下一次搜尋開啟新的計費 session
-    resetSession();
-    onPlaceSelect(place);
+    onPlaceSelect({
+      id: placeId,
+      displayName: place.displayName ?? '',
+      formattedAddress: place.formattedAddress ?? null,
+      latitude: place.location?.lat() ?? null,
+      longitude: place.location?.lng() ?? null,
+    });
   };
 
 
