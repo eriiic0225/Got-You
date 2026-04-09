@@ -217,8 +217,7 @@ app/
 
 The chat section uses a persistent layout defined in `chats/layout.tsx`. On desktop, it renders a two-column view — conversation list on the left, active chat on the right. On mobile, only one panel is shown at a time: the list or the chat window. `usePathname` determines which panel to display, and `BottomNav` is hidden entirely when inside a chat conversation to maximize screen space.
 
-> 📊 **Diagram**: Chat Layout RWD Design
-> ![Chat Layout RWD Design](./public/docs_src/chat_layout.png)
+![Chat Layout RWD Design](./public/docs_src/chat_layout.png)
 
 ---
 
@@ -236,8 +235,7 @@ The app uses five Zustand stores, each with a single responsibility. `useAuthSto
 | `useChatStore`         | Total unread count, current conversation ID | Unread count must be visible across multiple pages in both nav bars |
 | `useNotificationStore` | Notification list, unread count             | Decouples the floating bell UI from its data source                 |
 
-> 📊 **Diagram**: Zustand Store Architecture
-> ![Zustand Store Architecture](./public/docs_src/zustand_store.png)
+![Zustand Store Architecture](./public/docs_src/zustand_store.png)
 
 ---
 
@@ -278,8 +276,7 @@ User hits send
       └── fail: remove temp message (tempId) + restore input (rollback)
 ```
 
-> 📊 **Diagram**: Optimistic Update — Sending Chat Messages
-> ![Optimistic Update ](./public/docs_src/optimistic_update.png)
+![Optimistic Update ](./public/docs_src/optimistic_update.png)
 
 ---
 
@@ -335,8 +332,7 @@ Rather than handling notification creation in the frontend, the app uses Postgre
 
 This keeps notification logic close to the data, ensures no notification is missed regardless of client state, and avoids extra round-trips from the frontend. All notifications are consumed by `useNotificationStore` via a Realtime subscription on the `notifications` table.
 
-> 📊 **Diagram**: Notification DB Triggers
-> ![Notification DB Triggers](./public/docs_src/post_notification_flow.png)
+![Notification DB Triggers](./public/docs_src/post_notification_flow.png)
 
 ---
 

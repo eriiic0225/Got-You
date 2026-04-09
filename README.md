@@ -100,7 +100,7 @@ Got You is a sports social platform for finding compatible long-term training pa
 
 ### Third-Party Libraries
 
-- Radix UI (Accordion, Popover, Slider)
+- Radix UI
 - React DayPicker
 - Day.js
 - react-icons
@@ -140,7 +140,14 @@ The app uses five Zustand stores, each with a single responsibility. `useAuthSto
 
 The app maintains six Supabase Realtime channels across four components, each scoped to `user.id = me` and cleaned up on unmount. ChatList subscribes to three events on the `messages` table; ChatWindow subscribes where `receiver_id = me` and filters by `sender_id = current chat partner` inside the JS callback for precision.
 
-![Realtime Subscription Strategy](./public/docs_src/realtime_strategy.png)
+| Component         | Table               | Event                                                                                               | Purpose                                                     |
+| ----------------- | ------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| AuthInitializer   | `messages`          | `*` where `receiver_id = me`                                                                        | Re-fetch total unread count (excludes current conversation) |
+| AuthInitializer   | `notifications`     | INSERT where `receiver_id = me`                                                                     | Update notification unread count in bell                    |
+| ChatList          | `messages`          | INSERT where `receiver_id = me`<br>INSERT where `sender_id = me`<br>UPDATE where `receiver_id = me` | Re-fetch chat preview list                                  |
+| ChatWindow        | `messages`          | INSERT where `receiver_id = me`<br>(JS callback filters `sender_id = current chat partner`)         | Render incoming message + mark as read                      |
+| `/posts/[postId]` | `post_comments`     | INSERT                                                                                              | Render new comment in real time                             |
+| `/posts/[postId]` | `post_participants` | INSERT / DELETE                                                                                     | Update participant list and count                           |
 
 #### 5. Optimistic Update
 
@@ -151,6 +158,13 @@ Rather than waiting for DB confirmation, outgoing messages are rendered immediat
 #### 6. Compatibility Scoring RPC
 
 Compatibility scoring is handled by a PostgreSQL RPC function `get_recommended_users`. Sorting at the database level ensures globally correct ordering regardless of pagination offset. When `active_tab = nearby`, the function falls back to GPS distance sorting via PostGIS.
+
+| Factor                        | Score        |
+| ----------------------------- | ------------ |
+| Shared gym location           | +5 per match |
+| Shared sport preference       | +3 per match |
+| Age difference within 5 years | +2           |
+| Same gender                   | +1           |
 
 #### 7. Google Places Cache Layer
 
@@ -278,7 +292,7 @@ Got You 咖揪是一個運動社交平台，幫助你找到長期訓練夥伴，
 
 ### 第三方套件
 
-- Radix UI（Accordion、Popover、Slider）
+- Radix UI
 - React DayPicker
 - Day.js
 - react-icons
@@ -318,7 +332,14 @@ App 使用五個 Zustand Store，各自負責單一職責。`useAuthStore` 與 `
 
 App 在四個元件中維護六條 Supabase Realtime channel，皆以 `user.id = me` 限定範圍並在 unmount 時清除。ChatList 訂閱 `messages` 表的三種事件；ChatWindow 訂閱 `receiver_id = me` 的訊息，再於 JS callback 中以 `sender_id = 目前聊天對象` 精確過濾。
 
-![即時訂閱策略](./public/docs_src/realtime_strategy.png)
+| Component         | Table               | Event                                                                                               | Purpose                                                     |
+| ----------------- | ------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| AuthInitializer   | `messages`          | `*` where `receiver_id = me`                                                                        | Re-fetch total unread count (excludes current conversation) |
+| AuthInitializer   | `notifications`     | INSERT where `receiver_id = me`                                                                     | Update notification unread count in bell                    |
+| ChatList          | `messages`          | INSERT where `receiver_id = me`<br>INSERT where `sender_id = me`<br>UPDATE where `receiver_id = me` | Re-fetch chat preview list                                  |
+| ChatWindow        | `messages`          | INSERT where `receiver_id = me`<br>(JS callback filters `sender_id = current chat partner`)         | Render incoming message + mark as read                      |
+| `/posts/[postId]` | `post_comments`     | INSERT                                                                                              | Render new comment in real time                             |
+| `/posts/[postId]` | `post_participants` | INSERT / DELETE                                                                                     | Update participant list and count                           |
 
 #### 5. 樂觀更新
 
@@ -329,6 +350,13 @@ App 在四個元件中維護六條 Supabase Realtime channel，皆以 `user.id =
 #### 6. 相似度評分 RPC
 
 相似度計算由 PostgreSQL RPC 函式 `get_recommended_users` 處理，在資料庫層排序確保分頁正確性。`active_tab = nearby` 時 fallback 為 PostGIS GPS 距離排序。
+
+| Factor                        | Score        |
+| ----------------------------- | ------------ |
+| Shared gym location           | +5 per match |
+| Shared sport preference       | +3 per match |
+| Age difference within 5 years | +2           |
+| Same gender                   | +1           |
 
 #### 7. Google Places 快取層
 
