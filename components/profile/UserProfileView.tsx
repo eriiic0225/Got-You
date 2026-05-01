@@ -15,7 +15,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useExploreStore } from '@/stores/useExploreStore';
 
 // 個人資料頁專用型別：沿用 UserBase（生活照在元件內部 fetch，不透過 prop 傳入）
-export interface UserProfileData extends UserBase {}
+export type UserProfileData = UserBase
 
 // 元件 Props（只有這個檔案用，不對外 export）
 interface UserProfileViewProps {
