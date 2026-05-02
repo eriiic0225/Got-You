@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase/client";
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 
 interface ChatState {
@@ -12,7 +13,8 @@ interface ChatState {
   setCurrentConversationId: (id: string) => void
 }
 
-export const useChatStore = create<ChatState>((set, get) => {
+// devtools middleware 讓 Redux DevTools 擴充套件可以即時查看 store 狀態變化
+export const useChatStore = create<ChatState>()(devtools((set, get) => {
 
   const fetchTotalUnread = async (user_id: string) => {
     
@@ -31,6 +33,8 @@ export const useChatStore = create<ChatState>((set, get) => {
     
     const { count, error } = await query
 
+    console.log('[fetchTotalUnread]', { count, error, currentConversationId })
+
     if (error) { console.error(error); return }
 
     set({totalUnread: count ?? 0})
@@ -43,10 +47,12 @@ export const useChatStore = create<ChatState>((set, get) => {
     currentConversationId: "",
 
     startRealtimeSync: async () => {
-      if (channel) return  // ← 已經訂閱就不重複建立
       const { data: { session } } = await supabase.auth.getSession()
+      console.log('[startRealtimeSync]', { hasSession: !!session, hasChannel: !!channel })
       if (!session) return
-      await fetchTotalUnread(session.user.id)  // 初始化
+      // 每次都重抓未讀數（處理 TOKEN_REFRESHED 時 ChatList 已更新但 nav badge 沒跟上的問題）
+      await fetchTotalUnread(session.user.id)
+      if (channel) return  // 已訂閱就不重複建立 channel，但上面的 fetchTotalUnread 已經跑過了
       channel = supabase.channel(`${session.user.id}_unread_count`)
         .on(
           'postgres_changes', 
@@ -76,4 +82,4 @@ export const useChatStore = create<ChatState>((set, get) => {
       set({currentConversationId: id})
     }
   }
-})
+}, { name: 'ChatStore' }))

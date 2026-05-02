@@ -1,11 +1,14 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import Image from "next/image"
 import './globals.css';
 import { FiArrowRight } from "react-icons/fi"
 import LandingNav from "@/components/landing/LandingNav";
 import SportCarousel from "@/components/landing/SportCarousel";
 import FadeInOnScroll from "@/components/landing/FadeInOnScroll";
 import ScrollDownIndicator from "@/components/landing/ScrollDownIndicator";
+import heroImg from "@/public/hero_v1.jpg";
+import ctaBgImg from "@/public/background_1.png";
 
 
 // Hero 右側裝飾用的假揪團卡資料
@@ -121,10 +124,21 @@ export default function Home(){
       {/* hero */}
       <section className="relative min-h-screen overflow-hidden px-20">
         {/* 背景圖 + 遮罩 */}
-        <img 
-          className="absolute inset-0 w-full h-full -z-50 object-cover"
-          src="/hero_v1.jpg" alt="hero圖片" 
-        />
+        {/* div 負責定位和 z-index；Image fill 需要有 position 的父容器 */}
+        {/* priority：插入 preload link，LCP 圖片盡早開始下載 */}
+        {/* placeholder="blur"：下載中顯示模糊縮圖，完成後 fade 到清晰 */}
+        {/* sizes="100vw"：告知 Next.js 這張圖永遠是全視窗寬，讓它選最適合的尺寸 */}
+        <div className="absolute inset-0 -z-50">
+          <Image
+            src={heroImg}
+            alt="hero背景圖"
+            fill
+            priority
+            placeholder="blur"
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
         <div className="absolute inset-0 -z-40 bg-bg-primary/70" />
 
         {/* 文字及其他內容 */}
@@ -275,10 +289,14 @@ export default function Home(){
             aria-hidden
           />
           {/* 背景圖片 */}
-          <div className="absolute inset-0 w-full h-full rounded-3xl pointer-events-none">
-            <img src="/background_1.png"
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
-              />
+          <div className="absolute inset-0 w-full h-full rounded-3xl pointer-events-none overflow-hidden">
+            <Image
+              src={ctaBgImg}
+              alt=""
+              fill
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover opacity-50"
+            />
           </div>
 
           <div className="relative space-y-5">
