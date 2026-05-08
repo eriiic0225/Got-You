@@ -90,7 +90,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }: Pro
 
     if (insertError) {
       onRollback(tempId)  // 回滾刪除假訊息
-      setContent(sentContent) // 回滾復原沒送出的內容
+      setContent((prev) => (prev ? prev : sentContent))
       setError("訊息傳送失敗！請再試一次")
       setIsSubmiting(false)
       return
