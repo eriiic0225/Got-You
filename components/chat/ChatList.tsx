@@ -97,11 +97,9 @@ export default function ChatList(){
     // 訂閱 Realtime，才能即時更新狀態
     const myId = profile.id!
     const channel = supabase.channel(`chatlist-${myId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 別人傳給我的訊息
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages',
         filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', // 我已讀了訊息
-        filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 我傳出去的訊息
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages',
         filter: `sender_id=eq.${myId}` }, () => fetchChatsPreview(myId))
       .subscribe()
 
