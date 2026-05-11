@@ -1,20 +1,33 @@
 import { supabase } from "@/lib/supabase/client";
 import { useExploreStore } from "@/stores/useExploreStore";
 import { useUserStore } from "@/stores/useUserStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UserCardProfile } from '@/components/explore/UserCard'
 
-function useExploreUser(){
+interface UseExploreUserOptions {
+  initialUsers?: UserCardProfile[]
+}
+
+function useExploreUser({ initialUsers = [] }: UseExploreUserOptions = {}){
 
   const profile = useUserStore(state => state.profile)
   const { activeTab, filters }= useExploreStore()
 
-  const [matchedUsers, setMatchedUsers] = useState<UserCardProfile[]>([])
+  const [matchedUsers, setMatchedUsers] = useState<UserCardProfile[]>(initialUsers)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // 首次 client-side effect 跳過 fetch，沿用 Server Component 給的 initialUsers，
+  // 避免進頁面後立刻重抓一次相同資料造成閃爍
+  const hasUsedInitial = useRef(true)
+
   useEffect(()=>{
     if (!profile?.id) return
+
+    if (hasUsedInitial.current) {
+      hasUsedInitial.current = false
+      return
+    }
 
     const ac = new AbortController()
 
