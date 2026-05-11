@@ -30,9 +30,10 @@ async function checkOnboardingStatus(id:string):Promise<boolean> {
 function OnBoarding(){
 
   const router = useRouter()
-  const user = useAuthStore((state)=>state.user)
+  const auth = useAuthStore((state)=>state.auth)
   const fetchUser = useUserStore((state)=>state.fetchUser)
-  const isAuthLoading = useAuthStore((state)=>state.isLoading)
+  // 從 DU 解出當前 user（authenticated 時才有值）
+  const user = auth.status === 'authenticated' ? auth.user : null
   const [ stepCount, setStepCount ] = useState(1)
   const [ avatarFile, setAvatarFile ] = useState<File|null>(null)
   const [ avatarPreviewUrl, setAvatarPreviewUrl ] = useState<string | null>(null)
@@ -147,7 +148,7 @@ function OnBoarding(){
 
 
   // auth 尚未初始化完成，先不 render（避免 user 是 null 的瞬間）
-  if (isAuthLoading) {
+  if (auth.status === 'initializing') {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <LoadingSpinner/>

@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 export default function LandingNav(){
   // scrolled：記錄使用者是否已向下滾動
   const [scrolled, setScrolled] = useState(false)
-  const user = useAuthStore(state => state.user)
+  const isAuthenticated = useAuthStore(state => state.auth.status === 'authenticated')
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +45,7 @@ export default function LandingNav(){
       </div>
 
       {/* 右側登入按鈕 */}
-      { !user ? (
+      { !isAuthenticated ? (
         <Link
           href="/login"
           className="px-5 py-2 border border-border text-text-secondary hover:text-text-primary hover:border-primary/50 rounded-lg text-sm font-medium transition-all duration-200"
