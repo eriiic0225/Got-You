@@ -75,12 +75,11 @@ function OnBoarding(){
 
   const completeOnboarding = async()=>{
     if (!user) {
-      console.log("抓取不到用戶資料！")
+      console.error("抓取不到用戶資料！")
       return
     }
     setIsSubmitting(true)
     setSubmitError("")
-    console.log(user.id)
 
     let avatarUrl = null
 
@@ -90,7 +89,7 @@ function OnBoarding(){
         .upload(`${user.id}/avatar.jpg`, avatarFile, {upsert: true})
 
       if (uploadError){
-        console.log("uploadError", uploadError)
+        console.error("uploadError", uploadError)
         setSubmitError("上傳頭貼失敗，請再試一次")
         setIsSubmitting(false)
         return
@@ -108,7 +107,7 @@ function OnBoarding(){
       .update({...formData, avatar_url: avatarUrl, latitude:coords.latitude, longitude: coords.longitude, onboarding_completed: true})
       .eq("id", user.id)
     if (userError) {
-      console.log('userError:', userError)
+      console.error('userError:', userError)
       setSubmitError("儲存個人資料失敗，請再試一次")
       setIsSubmitting(false)
       return
@@ -119,7 +118,7 @@ function OnBoarding(){
       .from("user_sport_preferences")
       .upsert(sportPreferences)
     if (sportError) {
-      console.log('sportError:', sportError)
+      console.error('sportError:', sportError)
       setSubmitError("儲存運動偏好失敗，請再試一次")
       setIsSubmitting(false)
       return
@@ -130,7 +129,7 @@ function OnBoarding(){
       .from("user_gym_locations")
       .upsert(userLocations)
     if (locationError) {
-      console.log('locationError:', locationError)
+      console.error('locationError:', locationError)
       setSubmitError("儲存常去地點失敗，請再試一次")
       setIsSubmitting(false)
       return

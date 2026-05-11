@@ -86,7 +86,6 @@ export default function ChatList(){
         }, {} as Record<string, Chat>)
         // 最後轉成陣列
         const chatList = Object.values(grouped)
-        // console.log("聊天室列表資訊", chatList)
         setChats(chatList as Chat[])
       }
       setIsLoading(false)

@@ -105,8 +105,6 @@ export default function FilterContent({ activeTab, onClose }: FilterContentProps
       return acc // 記得return 累加值給下一輪用
     },{} as Record<SportCategory, SportType[]> )
   }, [sportTypes]) // 用 useMemo 將計算好的「值」包裹起來，才不會每次重新渲染都計算浪費效能
-  
-  // console.log(grouped)
 
   // ── 事件處理 ────────────────────────────────────────────────
   const toggleGender = (gender:Gender) => {

@@ -40,7 +40,6 @@ function ParticipantsList({ postId }: Props){
         return
       }
 
-      console.log(data)
       setUsers(data.map(p => {
         const user = p.users as unknown as ParticipantUser
         return {
