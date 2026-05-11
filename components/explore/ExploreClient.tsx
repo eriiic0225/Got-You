@@ -77,7 +77,7 @@ export default function ExploreClient({ initialUsers }: Props) {
         {/* 桌機版左欄 - 篩選器 */}
         <DesktopFilterSidebar activeTab={activeTab}/>
 
-        {/* 桌機版板右欄(手機版全屏) : 搜尋框 + Tab + 卡片*/}
+        {/* 桌機版右欄(手機版全屏) : 搜尋框 + Tab + 卡片*/}
         <div>
 
           <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
@@ -105,7 +105,7 @@ export default function ExploreClient({ initialUsers }: Props) {
                   <p>或 <span className="text-primary font-medium">地點名稱/地址</span> 找常去該地點的人</p>
                 </div>
               </div>
-              {/* 手機版篩選觸發扭 */}
+              {/* 手機版篩選觸發鈕 */}
               <button
                 onClick={() => setShowMobileFilter(true)}
                 className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-text-secondary text-sm hover:border-primary hover:text-text-primary transition relative"

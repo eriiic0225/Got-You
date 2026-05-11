@@ -16,7 +16,7 @@ import type { SelectedPlace } from "@/types/place";
 // const fieldTitleClassese = ""
 // const inputClassese = ""
 
-async function checkOnboardingSatus(id:string):Promise<boolean> {
+async function checkOnboardingStatus(id:string):Promise<boolean> {
   const { data: profile } = await supabase
     .from("users")
     .select("onboarding_completed")
@@ -34,7 +34,7 @@ function OnBoarding(){
   const fetchUser = useUserStore((state)=>state.fetchUser)
   const isAuthLoading = useAuthStore((state)=>state.isLoading)
   const [ stepCount, setStepCount ] = useState(1)
-  const [ avaterFile, setAvaterFile ] = useState<File|null>(null)
+  const [ avatarFile, setAvatarFile ] = useState<File|null>(null)
   const [ avatarPreviewUrl, setAvatarPreviewUrl ] = useState<string | null>(null)
   const [ coords, setCoords ] = useState<{latitude: null|number, longitude: null|number}>({latitude: null, longitude: null})
 
@@ -53,7 +53,7 @@ function OnBoarding(){
     if (!user) return
 
     async function check() {
-      const hasOnboard = await checkOnboardingSatus(user!.id)
+      const hasOnboard = await checkOnboardingStatus(user!.id)
       if (hasOnboard) {
         router.push('/explore')
       }
@@ -84,10 +84,10 @@ function OnBoarding(){
 
     let avatarUrl = null
 
-    if (avaterFile){
+    if (avatarFile){
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(`${user.id}/avatar.jpg`, avaterFile, {upsert: true})
+        .upload(`${user.id}/avatar.jpg`, avatarFile, {upsert: true})
 
       if (uploadError){
         console.log("uploadError", uploadError)
@@ -141,7 +141,7 @@ function OnBoarding(){
   }
 
   const onAvatarSelect = (avatar:File)=>{
-    setAvaterFile(avatar)
+    setAvatarFile(avatar)
     setAvatarPreviewUrl(URL.createObjectURL(avatar)) //生成預覽用的 url & 放進state往下層傳
   }
 
