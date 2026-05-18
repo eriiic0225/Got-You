@@ -49,12 +49,22 @@ export default function EditPhotosSection({ userId }: EditPhotosSectionProps) {
       setError(`最多只能上傳 ${MAX_PHOTOS} 張照片`)
       return
     }
+    // 驗證檔案類型 & 大小（useImage hook 在這沒用上，所以這裡內聯一次）
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) {
+      setError('僅支援 jpg / png / webp / gif 格式')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('檔案大小不能超過 5 MB')
+      return
+    }
 
     setIsUploading(true)
     setError(null)
 
-    // 步驟 1：用時間戳產生唯一檔名，避免覆蓋
-    const fileName = `${Date.now()}.jpg`
+    // 步驟 1：用時間戳 + 實際副檔名產生唯一檔名，避免副檔名與檔案實際格式不符
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+    const fileName = `${Date.now()}.${ext}`
     const storagePath = `${userId}/${fileName}`
 
     const { error: uploadError } = await supabase.storage

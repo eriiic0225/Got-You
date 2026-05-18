@@ -21,7 +21,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }: Pro
   const [error, setError] = useState("")
   const [isSubmiting, setIsSubmiting] = useState(false)
 
-  const { image, handleUpload, handlePaste, handleRemove, clearImage, inputRef } = useImage()
+  const { image, error: imageError, handleUpload, handlePaste, handleRemove, clearImage, inputRef } = useImage()
   // useImage 管理圖片選取/貼上/預覽/移除
   // clearImage = 程式化清空（不 revoke URL，讓樂觀預覽繼續顯示）
   // handleRemove = 使用者主動移除（revoke URL 釋放記憶體）
@@ -114,7 +114,7 @@ export default function ChatInput({ receiverId, onMessageSent, onRollback }: Pro
 
   return (
   <>
-    {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+    {(imageError || error) && <p className="text-red-400 text-xs text-center">{imageError || error}</p>}
     <div className="mx-2 py-2">
       <div className="flex items-end gap-1">
 

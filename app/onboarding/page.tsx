@@ -63,11 +63,11 @@ function OnBoarding(){
   },[user, router])
 
   const toNextStep = ()=>{
-    setStepCount(stepCount+1)
+    setStepCount(prev => prev + 1)
   }
 
   const toPrevStep = ()=>{
-    setStepCount(stepCount-1)
+    setStepCount(prev => prev - 1)
   }
 
   const onStep2Complete = (sports:string[])=>{
@@ -85,9 +85,15 @@ function OnBoarding(){
     let avatarUrl = null
 
     if (avatarFile){
+      // 路徑固定 avatar.jpg（搭配 upsert 覆蓋同一個檔，URL 不變）
+      // contentType 傳實際 MIME，讓 Storage 寫對 Content-Type header，
+      // 避免 PNG 被當成 jpg 在 CDN / 瀏覽器端誤判
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(`${user.id}/avatar.jpg`, avatarFile, {upsert: true})
+        .upload(`${user.id}/avatar.jpg`, avatarFile, {
+          upsert: true,
+          contentType: avatarFile.type,
+        })
 
       if (uploadError){
         console.error("uploadError", uploadError)

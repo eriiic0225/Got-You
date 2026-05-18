@@ -18,7 +18,7 @@ interface EditAvatarSectionProps {
 export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvatarSectionProps) {
   const fetchUser = useUserStore(state => state.fetchUser)
   const bumpAvatar = useUserStore(state => state.bumpAvatar)
-  const { image, handleUpload, handleRemove, inputRef } = useImage()
+  const { image, error: imageError, handleUpload, handleRemove, inputRef } = useImage()
 
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,9 +35,14 @@ export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvat
     setSuccess(false)
 
     // 步驟 1：上傳圖片到 avatars bucket，upsert: true 代表覆蓋已有的檔案
+    // contentType 傳實際 MIME，讓 Storage 寫對 Content-Type header
+    // 避免實際是 PNG / WebP 卻被當成 jpg 在 CDN / 瀏覽器端誤判
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(`${userId}/avatar.jpg`, image.file, { upsert: true })
+      .upload(`${userId}/avatar.jpg`, image.file, {
+        upsert: true,
+        contentType: image.file.type,
+      })
 
     if (uploadError) {
       setError('上傳頭貼失敗，請再試一次')
@@ -128,7 +133,7 @@ export default function EditAvatarSection({ currentAvatarUrl, userId }: EditAvat
           </div>
         )}
 
-        {error && <p className="text-red-400 text-xs">{error}</p>}
+        {(imageError || error) && <p className="text-red-400 text-xs">{imageError || error}</p>}
         {success && <p className="text-accent text-xs">頭貼已更新！</p>}
       </div>
 
