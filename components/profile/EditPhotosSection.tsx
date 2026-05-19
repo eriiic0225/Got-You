@@ -155,7 +155,7 @@ export default function EditPhotosSection({ userId }: EditPhotosSectionProps) {
           {/* 現有照片 */}
           {photos.map(photo => (
             <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden group">
-              <img src={photo.photo_url} alt="生活照" className="w-full h-full object-cover" />
+              <img src={photo.photo_url} alt="我的生活照" className="w-full h-full object-cover" />
               {/* 刪除按鈕：hover 才顯示 */}
               <button
                 onClick={() => handleDelete(photo)}

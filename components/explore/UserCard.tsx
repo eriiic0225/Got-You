@@ -23,7 +23,7 @@ function UserCard({ profile }: UserCardProps){
         {profile.avatar_url ? (
           <img
             src={profile.avatar_url}
-            alt="頭貼"
+            alt={`${profile.nickname} 的頭貼`}
             className="w-full h-full object-cover"
           />
         ) : (

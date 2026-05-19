@@ -129,7 +129,8 @@ export default function ChatList(){
                 {chat.avatar_url
                   ? <img
                       className="size-10 aspect-square rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
-                      src={chat.avatar_url} alt="頭貼"/>
+                      src={chat.avatar_url} 
+                      alt={`${chat.nickname}的頭貼`}/>
                   : <div
                       className="size-10 bg-bg-tertiary rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
                   ></div>}
