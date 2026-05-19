@@ -88,7 +88,7 @@ export default function PostDetail({ post }: Props) {
         </div>
 
         {/* ── 標題 ── */}
-        <h1 className="text-xl font-bold text-text-primary mb-4">
+        <h1 className="text-xl font-bold text-text-primary mb-4 wrap-break-word">
           {post.title}
         </h1>
 
@@ -114,7 +114,7 @@ export default function PostDetail({ post }: Props) {
         <div className="border-t border-border mb-5" />
 
         {/* ── 活動說明（保留換行）── */}
-        <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap wrap-break-word">
           {renderContent(post.description)}
         </p>
 

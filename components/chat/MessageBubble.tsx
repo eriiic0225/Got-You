@@ -101,9 +101,9 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
           />
         )}
 
-        {/* 文字訊息：whitespace-pre-wrap 保留換行；break-words 防止長字串溢出 */}
+        {/* 文字訊息：whitespace-pre-wrap 保留換行；wrap-break-word 防止長字串溢出 */}
         {message.content && (
-          <p className="whitespace-pre-wrap break-words leading-relaxed">
+          <p className="whitespace-pre-wrap wrap-break-word leading-relaxed">
             {renderContent(message.content)}
           </p>
         )}
