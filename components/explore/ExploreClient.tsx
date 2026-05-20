@@ -86,7 +86,7 @@ export default function ExploreClient({ initialUsers }: Props) {
               {/* 搜尋匡 */}
               <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary focus-within:border-primary-hover'>
                 <input type="search"
-                  className={cn('bg-bg-secondary px-3 py-2 text-sm focus:outline-none')}
+                  className={cn('bg-bg-secondary px-3 py-2 text-base focus:outline-none')}
                   placeholder='搜尋地點或會員'
                   value={searchQuery}
                   onChange={(e)=>{setSearchQuery(e.target.value)}}

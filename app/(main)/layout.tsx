@@ -8,7 +8,7 @@ import NotificationBell from '@/components/shared/NotificationBell'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-dvh bg-bg-primary">
       {/* 桌機版：頂部導航，高度 56px（h-14），內容需要 pt-14 避免被遮住 */}
       <TopNav />
 
