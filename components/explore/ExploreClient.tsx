@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import { FiSliders } from 'react-icons/fi'
+import * as Popover from '@radix-ui/react-popover'
 import { useExploreStore } from '@/stores/useExploreStore'
 import UserCard, { type UserCardProfile } from '@/components/explore/UserCard'
 import DesktopFilterSidebar from '@/components/explore/DesktopFilterSidebar'
@@ -86,25 +87,34 @@ export default function ExploreClient({ initialUsers }: Props) {
               {/* 搜尋匡 */}
               <div className='flex content-center rounded-lg overflow-hidden border border-bg-tertiary focus-within:border-primary-hover'>
                 <input type="search"
-                  className={cn('bg-bg-secondary px-3 py-2 text-base focus:outline-none')}
+                  className={cn('bg-bg-secondary px-3 py-2 text-base md:text-sm focus:outline-none')}
                   placeholder='搜尋地點或會員'
                   value={searchQuery}
                   onChange={(e)=>{setSearchQuery(e.target.value)}}
                 />
               </div>
-              {/* ? icon + tooltip */}
-              <div className="relative group">
-                <span className="text-text-secondary/50 cursor-default text-sm">?</span>
-
-                <div className={cn(`
-                  absolute right-0 top-7 w-57 hidden group-hover:block
-                  bg-bg-tertiary border border-border rounded-lg px-3 py-2
-                  text-xs text-text-secondary shadow-lg z-50 leading-relaxed
-                `)}>
-                  <p>輸入 <span className="text-primary font-medium">@暱稱</span> 搜尋特定會員</p>
-                  <p>或 <span className="text-primary font-medium">地點名稱/地址</span> 找常去該地點的人</p>
-                </div>
-              </div>
+              {/* ? icon + popover：Radix 同時支援桌機 hover/click 和手機 tap，自帶鍵盤導航與焦點管理 */}
+              <Popover.Root>
+                <Popover.Trigger asChild>
+                  <button
+                    type="button"
+                    aria-label="搜尋說明"
+                    className="text-text-secondary/50 hover:text-text-secondary text-sm cursor-pointer transition"
+                  >
+                    ?
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    sideOffset={5}
+                    align="end"
+                    className="w-57 bg-bg-tertiary/90 border border-border rounded-lg px-3 py-2 text-xs text-text-secondary shadow-lg leading-relaxed z-50"
+                  >
+                    <p>輸入 <span className="text-primary font-medium">@暱稱</span> 搜尋特定會員</p>
+                    <p>或 <span className="text-primary font-medium">地點名稱/地址</span> 找常去該地點的人</p>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
               {/* 手機版篩選觸發鈕 */}
               <button
                 onClick={() => setShowMobileFilter(true)}

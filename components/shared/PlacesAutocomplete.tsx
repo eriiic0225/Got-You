@@ -84,7 +84,7 @@ function PlacesAutocomplete({onPlaceSelect}: Props){
         onInput={event => handleInput(event)}
         value={inputValue}
         placeholder="🔍 搜尋運動場所"
-        className="bg-bg-secondary w-full rounded-md px-3 py-2 border border-border text-sm focus:outline-none focus:border-primary transition"
+        className="bg-bg-secondary w-full rounded-md px-3 py-2 border border-border text-base md:text-sm focus:outline-none focus:border-primary transition"
       />
 
       {suggestions.length > 0 && (

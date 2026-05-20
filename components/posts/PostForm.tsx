@@ -110,7 +110,7 @@ export default function PostForm({ sportTypes }: Props){
   // 共用的 input 樣式，所有文字輸入欄位都套這個，保持視覺一致
   const inputClass = cn(
     "w-full bg-bg-tertiary border border-border rounded-lg px-3 py-2.5",
-    "text-sm text-text-primary placeholder:text-text-secondary/50",
+    "text-base md:text-sm text-text-primary placeholder:text-text-secondary/50",
     "focus:outline-none focus:border-primary/50 transition-colors"
   )
 

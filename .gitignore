@@ -38,7 +38,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# next-env.d.ts 由 next dev / build 自動生成，本機原本可以 ignore，
+# 但 CI 不會跑 Next.js → 沒有此檔 → tsc 找不到圖片 import 的型別宣告
+# → 故 commit 進 repo
 
 # AI 協作相關
 docs/

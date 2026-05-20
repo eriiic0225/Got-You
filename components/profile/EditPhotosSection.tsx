@@ -154,14 +154,16 @@ export default function EditPhotosSection({ userId }: EditPhotosSectionProps) {
         <div className="grid grid-cols-3 gap-2">
           {/* 現有照片 */}
           {photos.map(photo => (
-            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden group">
+            <div key={photo.id} className="relative aspect-square rounded-xl overflow-hidden">
               <img src={photo.photo_url} alt="我的生活照" className="w-full h-full object-cover" />
-              {/* 刪除按鈕：hover 才顯示 */}
+              {/* 刪除按鈕：常駐顯示（編輯頁脈絡下視覺干擾可接受，且行動裝置無 hover）*/}
               <button
+                type="button"
+                aria-label="刪除這張照片"
                 onClick={() => handleDelete(photo)}
-                className="absolute top-1 right-1 bg-black/60 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
+                className="absolute top-1 right-1 bg-black/60 hover:bg-black/80 rounded-full p-1 transition"
               >
-                <MdClose size={14} className="text-white" />
+                <MdClose size={14} className="text-white" aria-hidden />
               </button>
             </div>
           ))}
