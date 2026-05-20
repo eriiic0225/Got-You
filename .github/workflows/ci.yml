@@ -1,0 +1,38 @@
+name: CI
+
+# 觸發時機：
+# - push 到 main / develop 時（防止主分支被推入壞 code）
+# - 任何 PR target 到 main / develop 時（merge 前先檢查）
+# feature 分支單純 push 不會跑，避免浪費 CI minutes；開 PR 時才會驗
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    name: Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npx vitest run
