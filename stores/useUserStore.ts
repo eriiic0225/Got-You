@@ -40,8 +40,6 @@ export const useUserStore = create<UserState>((set, get)=>({
       .eq('id', session.user.id)
       .single()
 
-    console.log("目前用戶資料", data)
-
     if (error) { console.error(error); return }
     
     const buster = get().avatarCacheBuster

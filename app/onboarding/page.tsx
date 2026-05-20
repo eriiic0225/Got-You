@@ -16,7 +16,7 @@ import type { SelectedPlace } from "@/types/place";
 // const fieldTitleClassese = ""
 // const inputClassese = ""
 
-async function checkOnboardingSatus(id:string):Promise<boolean> {
+async function checkOnboardingStatus(id:string):Promise<boolean> {
   const { data: profile } = await supabase
     .from("users")
     .select("onboarding_completed")
@@ -30,11 +30,12 @@ async function checkOnboardingSatus(id:string):Promise<boolean> {
 function OnBoarding(){
 
   const router = useRouter()
-  const user = useAuthStore((state)=>state.user)
+  const auth = useAuthStore((state)=>state.auth)
   const fetchUser = useUserStore((state)=>state.fetchUser)
-  const isAuthLoading = useAuthStore((state)=>state.isLoading)
+  // 從 DU 解出當前 user（authenticated 時才有值）
+  const user = auth.status === 'authenticated' ? auth.user : null
   const [ stepCount, setStepCount ] = useState(1)
-  const [ avaterFile, setAvaterFile ] = useState<File|null>(null)
+  const [ avatarFile, setAvatarFile ] = useState<File|null>(null)
   const [ avatarPreviewUrl, setAvatarPreviewUrl ] = useState<string | null>(null)
   const [ coords, setCoords ] = useState<{latitude: null|number, longitude: null|number}>({latitude: null, longitude: null})
 
@@ -53,7 +54,7 @@ function OnBoarding(){
     if (!user) return
 
     async function check() {
-      const hasOnboard = await checkOnboardingSatus(user!.id)
+      const hasOnboard = await checkOnboardingStatus(user!.id)
       if (hasOnboard) {
         router.push('/explore')
       }
@@ -62,11 +63,11 @@ function OnBoarding(){
   },[user, router])
 
   const toNextStep = ()=>{
-    setStepCount(stepCount+1)
+    setStepCount(prev => prev + 1)
   }
 
   const toPrevStep = ()=>{
-    setStepCount(stepCount-1)
+    setStepCount(prev => prev - 1)
   }
 
   const onStep2Complete = (sports:string[])=>{
@@ -75,22 +76,27 @@ function OnBoarding(){
 
   const completeOnboarding = async()=>{
     if (!user) {
-      console.log("抓取不到用戶資料！")
+      console.error("抓取不到用戶資料！")
       return
     }
     setIsSubmitting(true)
     setSubmitError("")
-    console.log(user.id)
 
     let avatarUrl = null
 
-    if (avaterFile){
+    if (avatarFile){
+      // 路徑固定 avatar.jpg（搭配 upsert 覆蓋同一個檔，URL 不變）
+      // contentType 傳實際 MIME，讓 Storage 寫對 Content-Type header，
+      // 避免 PNG 被當成 jpg 在 CDN / 瀏覽器端誤判
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(`${user.id}/avatar.jpg`, avaterFile, {upsert: true})
+        .upload(`${user.id}/avatar.jpg`, avatarFile, {
+          upsert: true,
+          contentType: avatarFile.type,
+        })
 
       if (uploadError){
-        console.log("uploadError", uploadError)
+        console.error("uploadError", uploadError)
         setSubmitError("上傳頭貼失敗，請再試一次")
         setIsSubmitting(false)
         return
@@ -108,7 +114,7 @@ function OnBoarding(){
       .update({...formData, avatar_url: avatarUrl, latitude:coords.latitude, longitude: coords.longitude, onboarding_completed: true})
       .eq("id", user.id)
     if (userError) {
-      console.log('userError:', userError)
+      console.error('userError:', userError)
       setSubmitError("儲存個人資料失敗，請再試一次")
       setIsSubmitting(false)
       return
@@ -119,7 +125,7 @@ function OnBoarding(){
       .from("user_sport_preferences")
       .upsert(sportPreferences)
     if (sportError) {
-      console.log('sportError:', sportError)
+      console.error('sportError:', sportError)
       setSubmitError("儲存運動偏好失敗，請再試一次")
       setIsSubmitting(false)
       return
@@ -130,7 +136,7 @@ function OnBoarding(){
       .from("user_gym_locations")
       .upsert(userLocations)
     if (locationError) {
-      console.log('locationError:', locationError)
+      console.error('locationError:', locationError)
       setSubmitError("儲存常去地點失敗，請再試一次")
       setIsSubmitting(false)
       return
@@ -141,14 +147,14 @@ function OnBoarding(){
   }
 
   const onAvatarSelect = (avatar:File)=>{
-    setAvaterFile(avatar)
+    setAvatarFile(avatar)
     setAvatarPreviewUrl(URL.createObjectURL(avatar)) //生成預覽用的 url & 放進state往下層傳
   }
 
 
 
   // auth 尚未初始化完成，先不 render（避免 user 是 null 的瞬間）
-  if (isAuthLoading) {
+  if (auth.status === 'initializing') {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <LoadingSpinner/>

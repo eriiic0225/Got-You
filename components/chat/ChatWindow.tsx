@@ -178,13 +178,13 @@ export default function ChatWindow({ partnerId }: Props){
           {/* 頭貼 + 名稱：點擊前往對方的個人頁 */}
           <Link
             href={`/profile/${partnerId}`}
-            title="前往用戶資料頁"
+            title={`前往${partner?.nickname}的用戶資料頁`}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             {partner?.avatar_url
               ? <img
                   src={partner?.avatar_url}
-                  alt="頭貼"
+                  alt={`${partner?.nickname}的頭貼`}
                   className="size-8 rounded-full border border-border object-cover"
                 />
               : <div className="size-8 rounded-full bg-bg-tertiary border border-border" />}
@@ -237,6 +237,7 @@ export default function ChatWindow({ partnerId }: Props){
                       showAvatar={showAvatar}
                       hasExtraMargin={hasExtraMargin}
                       partnerAvatar={partner?.avatar_url ?? null}
+                      partnerNickname={partner?.nickname ?? null}
                     />
                   </Fragment>
                 )

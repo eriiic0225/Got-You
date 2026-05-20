@@ -86,7 +86,6 @@ export default function ChatList(){
         }, {} as Record<string, Chat>)
         // 最後轉成陣列
         const chatList = Object.values(grouped)
-        // console.log("聊天室列表資訊", chatList)
         setChats(chatList as Chat[])
       }
       setIsLoading(false)
@@ -97,11 +96,9 @@ export default function ChatList(){
     // 訂閱 Realtime，才能即時更新狀態
     const myId = profile.id!
     const channel = supabase.channel(`chatlist-${myId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 別人傳給我的訊息
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages',
         filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', // 我已讀了訊息
-        filter: `receiver_id=eq.${myId}` }, () => fetchChatsPreview(myId))
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', // 我傳出去的訊息
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages',
         filter: `sender_id=eq.${myId}` }, () => fetchChatsPreview(myId))
       .subscribe()
 
@@ -132,7 +129,8 @@ export default function ChatList(){
                 {chat.avatar_url
                   ? <img
                       className="size-10 aspect-square rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
-                      src={chat.avatar_url} alt="頭貼"/>
+                      src={chat.avatar_url} 
+                      alt={`${chat.nickname}的頭貼`}/>
                   : <div
                       className="size-10 bg-bg-tertiary rounded-full border border-border shrink-0 shadow-bg-tertiary shadow-2xl"
                   ></div>}

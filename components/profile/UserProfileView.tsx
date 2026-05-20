@@ -69,7 +69,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
             {/* ring-4 ring-bg-secondary 製造頭貼浮起的視覺效果 */}
             <div className='size-44 rounded-xl ring-4 bg-bg-tertiary ring-bg-secondary overflow-hidden'>
               {profile.avatar_url
-                ? <img alt='頭貼' src={profile.avatar_url} className="w-full h-full object-cover" />
+                ? <img alt={`${profile.nickname} 的頭貼`} src={profile.avatar_url} className="w-full h-full object-cover" />
                 : (
                   <div className="w-full h-full flex items-center justify-center bg-bg-tertiary">
                     <RxAvatar size={72} className="text-text-secondary" />
@@ -181,7 +181,7 @@ export default function UserProfileView({ profile, isOwnProfile }: UserProfileVi
             <div className='grid grid-cols-3 gap-2'>
               {photos.map((url) => (
                 <div key={url} className='aspect-square rounded-xl overflow-hidden'>
-                  <img src={url} alt='生活照' className='w-full h-full object-cover' />
+                  <img src={url} alt={`${profile.nickname} 的生活照`} className='w-full h-full object-cover' />
                 </div>
               ))}
             </div>

@@ -64,9 +64,8 @@ export const useChatStore = create<ChatState>()(devtools((set, get) => {
             filter: `receiver_id=eq.${session.user.id}`
           }, 
           // callback function
-          (payload) => {
-            console.log('新訊息！', payload.new)
-            fetchTotalUnread(session.user.id) // 重抓unread訊息數
+          () => {
+            fetchTotalUnread(session.user.id)
           })
         .subscribe()
     },

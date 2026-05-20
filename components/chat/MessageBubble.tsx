@@ -12,9 +12,10 @@ interface Props {
   showAvatar: boolean           // 是否顯示頭像（連續訊息只在最後一則顯示 or 對方隔太久才傳下一則訊息）
   hasExtraMargin: boolean       // 是否加大間距（隔太久才傳下一則訊息）
   partnerAvatar: string | null  // 對方的頭像 URL，null 時顯示預設色塊
+  partnerNickname: string | null
 }
 
-export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMargin, partnerAvatar }: Props) {
+export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMargin, partnerAvatar, partnerNickname }: Props) {
 
   // 加上提取網址連結並轉換成 <a> 標籤
   function renderContent(content: string){
@@ -72,7 +73,7 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
             partnerAvatar
               ? <img
                   src={partnerAvatar}
-                  alt="頭貼"
+                  alt={`${partnerNickname}的頭貼`}
                   className="size-8 rounded-full border border-border object-cover"
                 />
               : <div className="size-8 rounded-full bg-bg-tertiary border border-border" />
@@ -91,18 +92,18 @@ export default function MessageBubble({ message, isOwn, showAvatar, hasExtraMarg
           : "bg-bg-tertiary text-text-primary rounded-2xl rounded-bl-sm"
       )}>
 
-        {/* 圖片訊息（預留，上傳功能完成後啟用） */}
+        {/* 圖片訊息 */}
         {message.image_url && (
           <img
             src={message.image_url}
-            alt="圖片訊息"
+            alt={`圖片訊息 - ${formatMessageBubbleTime(message.created_at)}`}
             className="max-w-full rounded-lg"
           />
         )}
 
-        {/* 文字訊息：whitespace-pre-wrap 保留換行；break-words 防止長字串溢出 */}
+        {/* 文字訊息：whitespace-pre-wrap 保留換行；wrap-break-word 防止長字串溢出 */}
         {message.content && (
-          <p className="whitespace-pre-wrap break-words leading-relaxed">
+          <p className="whitespace-pre-wrap wrap-break-word leading-relaxed">
             {renderContent(message.content)}
           </p>
         )}

@@ -31,11 +31,10 @@ function LoginPage(){
 
   // 已登入用戶不應看到登入頁（proxy 負責 hard refresh，這裡負責 client-side 導航的情況）
   // Next.js router cache 可能讓 Link 點擊繞過 proxy，所以這裡做第二道防線
-  const user = useAuthStore((state) => state.user)
-  const isLoading = useAuthStore((state) => state.isLoading)
+  const auth = useAuthStore((state) => state.auth)
   useEffect(() => {
-    if (!isLoading && user) router.replace('/explore')
-  }, [user, isLoading, router])
+    if (auth.status === 'authenticated') router.replace('/explore')
+  }, [auth, router])
 
   // ⚠️ useForm 必須在 early return 之前呼叫，否則違反 Rules of Hooks
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<LoginInput>({
@@ -43,7 +42,7 @@ function LoginPage(){
   })
 
   // 確認中或已登入時不渲染表單，避免畫面閃爍（所有 hooks 已在上方呼叫完畢）
-  if (isLoading || user) return null
+  if (auth.status !== 'unauthenticated') return null
 
 
   const onSubmit: SubmitHandler<LoginInput> = async (payload) => {

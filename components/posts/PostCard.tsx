@@ -34,7 +34,8 @@ function PostCard({ post }: Props){
       <div className='bg-primary w-1 rounded-l-lg hover:bg-primary-hover shrink-0'/>
 
       {/* 內容區 */}
-      <div className='p-4 grow'>
+      {/* min-w-0：flex item 預設 min-width: auto 會被內部長字串撐破，明確設 0 才允許縮窄 */}
+      <div className='p-4 grow min-w-0'>
 
         {/* ── 上排：運動類型 badge + 發文者資訊 ── */}
         <div className="flex justify-between items-center mb-3">
@@ -86,13 +87,13 @@ function PostCard({ post }: Props){
 
         {/* ── 活動說明 ── */}
         <h3
-          className='font-semibold'
+          className='font-semibold break-all'
         >
           {post.title}
         </h3>
 
         {/* ── 活動說明（最多顯示兩行，超出截斷）── */}
-        <p className="text-sm text-text-secondary line-clamp-2 leading-relaxed mb-4">
+        <p className="text-sm text-text-secondary line-clamp-2 leading-relaxed mb-4 break-all">
           {post.description}
         </p>
 

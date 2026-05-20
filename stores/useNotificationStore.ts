@@ -79,8 +79,7 @@ export const useNotificationStore = create<NotificationState>((set) => {
             // 進階：過濾出與自己相關的訊息
             filter: `receiver_id=eq.${session.user.id}`
           },
-          (payload) => {
-            console.log('新訊息！', payload.new)
+          () => {
             fetchNotification(session.user.id) // 重抓unread訊息數
           })
         .subscribe()

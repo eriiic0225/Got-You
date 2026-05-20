@@ -40,7 +40,6 @@ function ParticipantsList({ postId }: Props){
         return
       }
 
-      console.log(data)
       setUsers(data.map(p => {
         const user = p.users as unknown as ParticipantUser
         return {
@@ -84,7 +83,7 @@ function ParticipantsList({ postId }: Props){
           >
             {/* 頭貼 */}
             {u.avatar_url 
-              ? <img src={u.avatar_url} className="size-8 rounded-full object-cover border border-border" /> 
+              ? <img src={u.avatar_url} alt={`${u.nickname} 的頭貼`} className="size-8 rounded-full object-cover border border-border" />
               : (
                 <div className="size-10 rounded-full flex items-center justify-center border border-border bg-bg-secondary text-text-secondary">
                   <span>{u.nickname[0]}</span>

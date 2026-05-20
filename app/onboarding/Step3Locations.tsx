@@ -65,7 +65,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
       setNearbyPlaces(places)
     } catch (err) {
       // 搜尋失敗就靜默處理，不擋使用者操作（附近推薦是輔助功能）
-      console.log('Nearby search error:', err)
+      console.warn('Nearby search error:', err)
     } finally {
       setIsLoadingNearby(false)
     }
@@ -91,7 +91,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
         }
       } catch (err) {
         // IP 定位失敗就不顯示推薦，不影響主流程
-        console.log('IP geolocation error:', err)
+        console.warn('IP geolocation error:', err)
         setIsLoadingNearby(false)
       }
     }
@@ -117,7 +117,7 @@ function Step3Locations({selectedPlaces, setSelectedPlaces, completeOnboarding, 
       },
       // 失敗 callback：使用者拒絕授權，或裝置沒有 GPS
       (error) => {
-        console.log('GPS error:', error)
+        console.warn('GPS error:', error)
         setIsLocating(false)
       }
     )

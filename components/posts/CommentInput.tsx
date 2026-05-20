@@ -62,7 +62,7 @@ export default function CommentInput({ postId, onCommentSend, onRollback }: Prop
     if (error) {
       console.error('留言失敗', error.message)
       onRollback(tempId)
-      setContent(sentContent)
+      setContent((prev) => (prev ? prev : sentContent))
     }
     setIsSubmitting(false)
   }

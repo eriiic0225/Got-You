@@ -43,3 +43,6 @@ next-env.d.ts
 # AI 協作相關
 docs/
 CLAUDE.md
+
+# Vitest 報告與構建產物
+.vitest/
