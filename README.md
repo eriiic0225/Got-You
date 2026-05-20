@@ -10,6 +10,7 @@
 
 ![Got You Banner](./public/docs_src/banner.png)
 
+[![CI](https://github.com/eriiic0225/Got-You/actions/workflows/ci.yml/badge.svg)](https://github.com/eriiic0225/Got-You/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -209,6 +210,7 @@ Eric Fan
 
 ![Got You Banner](./public/docs_src/banner.png)
 
+[![CI](https://github.com/eriiic0225/Got-You/actions/workflows/ci.yml/badge.svg)](https://github.com/eriiic0225/Got-You/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
