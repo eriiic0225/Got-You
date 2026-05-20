@@ -94,7 +94,7 @@ export default function EditBasicInfoForm({ profile }: EditBasicInfoFormProps) {
               }
             })}
             type="text"
-            className="w-full bg-bg-tertiary rounded-lg px-3 py-2 border border-border text-sm focus:outline-none focus:border-primary transition"
+            className="w-full bg-bg-tertiary rounded-lg px-3 py-2 border border-border text-base md:text-sm focus:outline-none focus:border-primary transition"
           />
           {errors.nickname && (
             <p className="text-red-400 text-xs mt-1">{errors.nickname.message}</p>
@@ -118,7 +118,7 @@ export default function EditBasicInfoForm({ profile }: EditBasicInfoFormProps) {
           <textarea
             {...register('bio', { required: '請填寫自我介紹' })}
             rows={4}
-            className="w-full bg-bg-tertiary rounded-lg px-3 py-2 border border-border text-sm focus:outline-none focus:border-primary transition resize-none" 
+            className="w-full bg-bg-tertiary rounded-lg px-3 py-2 border border-border text-base md:text-sm focus:outline-none focus:border-primary transition resize-none"
             placeholder="📝 寫點什麼讓大家能更認識你吧"
           />
           {errors.bio && (

@@ -94,7 +94,7 @@ export default function CommentInput({ postId, onCommentSend, onRollback }: Prop
           rows={1}
           className={cn(
             "flex-1 bg-bg-tertiary border border-border rounded-lg px-3 py-2",
-            "text-sm text-text-primary placeholder:text-text-secondary/50",
+            "text-base md:text-sm text-text-primary placeholder:text-text-secondary/50",
             "focus:outline-none focus:border-primary/50 transition-colors resize-none",
             "overflow-y-auto",   // 超過 max-h 後出現捲軸
           )}
