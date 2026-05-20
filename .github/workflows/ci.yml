@@ -14,6 +14,8 @@ jobs:
   quality:
     name: Lint, Typecheck & Test
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Taipei
 
     steps:
       - name: Checkout
